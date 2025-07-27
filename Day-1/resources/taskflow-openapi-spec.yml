@@ -1,0 +1,837 @@
+openapi: 3.0.3
+info:
+  title: TaskFlow API
+  description: |
+    TaskFlow is a project management system designed with domain-driven principles.
+    
+    This API demonstrates business-focused design where URLs speak business language,
+    not database language. Notice how endpoints like `/teams/engineering/projects` 
+    read like business conversations.
+    
+    **Key Design Principles:**
+    - Domain-driven endpoint design
+    - Business language in URLs and responses
+    - Professional error handling
+    - RESTful resource relationships
+    
+  version: 1.0.0
+  contact:
+    name: TaskFlow API Team
+    url: https://github.com/your-org/taskflow-api
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://taskflow-demo.herokuapp.com/api/v1
+    description: Demo environment for Day 1 course
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+
+tags:
+  - name: teams
+    description: Team management operations
+  - name: projects
+    description: Project planning and management
+  - name: tasks
+    description: Task execution and tracking
+  - name: users
+    description: User identity and permissions
+
+paths:
+  /teams:
+    get:
+      tags: [teams]
+      summary: List all teams
+      description: Get a list of all teams in the organization
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Team'
+                  meta:
+                    $ref: '#/components/schemas/MetaInfo'
+              example:
+                teams:
+                  - id: "engineering"
+                    name: "Engineering Team"
+                    description: "Software development and architecture"
+                    memberCount: 12
+                    projectCount: 5
+                    createdAt: "2024-01-01T10:00:00Z"
+                  - id: "design"
+                    name: "Design Team" 
+                    description: "User experience and visual design"
+                    memberCount: 6
+                    projectCount: 3
+                    createdAt: "2024-01-02T10:00:00Z"
+                meta:
+                  total: 2
+                  page: 1
+                  limit: 20
+
+    post:
+      tags: [teams]
+      summary: Create a new team
+      description: Create a new team in the organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTeamRequest'
+            example:
+              name: "marketing"
+              displayName: "Marketing Team"
+              description: "Product marketing and customer engagement"
+      responses:
+        '201':
+          description: Team created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  team:
+                    $ref: '#/components/schemas/Team'
+              example:
+                team:
+                  id: "marketing"
+                  name: "Marketing Team"
+                  description: "Product marketing and customer engagement"
+                  memberCount: 0
+                  projectCount: 0
+                  createdAt: "2024-01-15T10:30:00Z"
+        '409':
+          description: Team name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  type: "conflict"
+                  message: "Team with name 'marketing' already exists"
+                  details:
+                    field: "name"
+                    value: "marketing"
+                  suggestion: "Choose a different team name"
+
+  /teams/{teamId}:
+    get:
+      tags: [teams]
+      summary: Get team details
+      description: Get detailed information about a specific team
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "engineering"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  team:
+                    $ref: '#/components/schemas/TeamDetails'
+        '404':
+          description: Team not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /teams/{teamId}/projects:
+    get:
+      tags: [teams, projects]
+      summary: Get team's projects
+      description: Get all projects belonging to a specific team
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "engineering"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, completed, on_hold]
+          example: "active"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  meta:
+                    $ref: '#/components/schemas/MetaInfo'
+              example:
+                projects:
+                  - id: "website-redesign"
+                    name: "Website Redesign"
+                    description: "Complete overhaul of company website"
+                    status: "in_progress"
+                    teamId: "engineering"
+                    tasksCount: 12
+                    completedTasks: 8
+                    startDate: "2024-01-01"
+                    dueDate: "2024-03-01"
+                meta:
+                  total: 1
+                  filtered: true
+                  filters:
+                    status: "active"
+
+    post:
+      tags: [teams, projects]
+      summary: Create project in team
+      description: Create a new project within a specific team
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "engineering"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+            example:
+              name: "mobile-app-v2"
+              displayName: "Mobile App v2"
+              description: "Next generation mobile application"
+              priority: "high"
+              dueDate: "2024-06-01"
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/Project'
+        '404':
+          description: Team not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /projects/{projectId}:
+    get:
+      tags: [projects]
+      summary: Get project details
+      description: Get detailed information about a specific project
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "website-redesign"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/ProjectDetails'
+
+  /projects/{projectId}/tasks:
+    get:
+      tags: [projects, tasks]
+      summary: Get project tasks
+      description: Get all tasks belonging to a specific project
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "website-redesign"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [todo, in_progress, completed, blocked]
+        - name: assignedTo
+          in: query
+          schema:
+            type: string
+          example: "jane.smith"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  meta:
+                    $ref: '#/components/schemas/MetaInfo'
+
+    post:
+      tags: [projects, tasks]
+      summary: Create task in project
+      description: Create a new task within a specific project
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "website-redesign"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+            example:
+              title: "Implement user authentication"
+              description: "Add JWT-based login system with role management"
+              priority: "high"
+              estimatedHours: 8
+              assignedTo: "jane.smith"
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/Task'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  type: "not_found"
+                  message: "Project 'nonexistent-project' does not exist"
+                  details:
+                    resource: "project"
+                    id: "nonexistent-project"
+                  suggestion: "Check the project ID and try again"
+
+  /tasks/{taskId}:
+    get:
+      tags: [tasks]
+      summary: Get task details
+      description: Get detailed information about a specific task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "task_001"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/TaskDetails'
+
+    put:
+      tags: [tasks]
+      summary: Update task
+      description: Update task details and status
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "task_001"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+            example:
+              status: "in_progress"
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/Task'
+
+  /tasks/{taskId}/assign:
+    put:
+      tags: [tasks]
+      summary: Assign task to user
+      description: Assign a task to a specific team member
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "task_001"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignTaskRequest'
+            example:
+              assignedTo: "jane.smith"
+              assignedBy: "john.doe"
+      responses:
+        '200':
+          description: Task assigned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task:
+                    $ref: '#/components/schemas/Task'
+        '422':
+          description: Invalid assignment (user not in team)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  type: "invalid_request"
+                  message: "Cannot assign task to user outside the team"
+                  details:
+                    taskId: "task_001"
+                    userId: "external.user"
+                    teamId: "engineering"
+                  suggestion: "Add user to team first, then assign task"
+
+  /tasks/{taskId}/comments:
+    post:
+      tags: [tasks]
+      summary: Add comment to task
+      description: Add a comment or update to a task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "task_001"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequest'
+            example:
+              comment: "Implemented basic JWT middleware, next up is role validation"
+              author: "jane.smith"
+      responses:
+        '201':
+          description: Comment added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comment:
+                    $ref: '#/components/schemas/Comment'
+
+components:
+  schemas:
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique team identifier (URL-friendly)
+          example: "engineering"
+        name:
+          type: string
+          description: Human-readable team name
+          example: "Engineering Team"
+        description:
+          type: string
+          example: "Software development and architecture"
+        memberCount:
+          type: integer
+          example: 12
+        projectCount:
+          type: integer
+          example: 5
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-01T10:00:00Z"
+
+    TeamDetails:
+      allOf:
+        - $ref: '#/components/schemas/Team'
+        - type: object
+          properties:
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+            projects:
+              type: array
+              items:
+                $ref: '#/components/schemas/Project'
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "website-redesign"
+        name:
+          type: string
+          example: "Website Redesign"
+        description:
+          type: string
+          example: "Complete overhaul of company website"
+        status:
+          type: string
+          enum: [planning, in_progress, completed, on_hold]
+          example: "in_progress"
+        teamId:
+          type: string
+          example: "engineering"
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          example: "high"
+        tasksCount:
+          type: integer
+          example: 12
+        completedTasks:
+          type: integer
+          example: 8
+        startDate:
+          type: string
+          format: date
+          example: "2024-01-01"
+        dueDate:
+          type: string
+          format: date
+          example: "2024-03-01"
+        createdAt:
+          type: string
+          format: date-time
+
+    ProjectDetails:
+      allOf:
+        - $ref: '#/components/schemas/Project'
+        - type: object
+          properties:
+            tasks:
+              type: array
+              items:
+                $ref: '#/components/schemas/Task'
+            team:
+              $ref: '#/components/schemas/Team'
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "task_001"
+        title:
+          type: string
+          example: "Implement user authentication"
+        description:
+          type: string
+          example: "Add JWT-based login system with role management"
+        status:
+          type: string
+          enum: [todo, in_progress, completed, blocked]
+          example: "todo"
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          example: "high"
+        projectId:
+          type: string
+          example: "website-redesign"
+        assignedTo:
+          type: string
+          nullable: true
+          example: "jane.smith"
+        assignedBy:
+          type: string
+          nullable: true
+          example: "john.doe"
+        estimatedHours:
+          type: integer
+          nullable: true
+          example: 8
+        actualHours:
+          type: integer
+          nullable: true
+          example: 6
+        createdAt:
+          type: string
+          format: date-time
+        assignedAt:
+          type: string
+          format: date-time
+          nullable: true
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    TaskDetails:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          properties:
+            comments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Comment'
+            project:
+              $ref: '#/components/schemas/Project'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "jane.smith"
+        name:
+          type: string
+          example: "Jane Smith"
+        email:
+          type: string
+          format: email
+          example: "jane.smith@company.com"
+        role:
+          type: string
+          enum: [developer, designer, manager, admin]
+          example: "developer"
+        teamId:
+          type: string
+          example: "engineering"
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "comment_001"
+        taskId:
+          type: string
+          example: "task_001"
+        comment:
+          type: string
+          example: "Implemented basic JWT middleware, next up is role validation"
+        author:
+          type: string
+          example: "jane.smith"
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateTeamRequest:
+      type: object
+      required: [name, displayName]
+      properties:
+        name:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+          description: URL-friendly team identifier
+          example: "marketing"
+        displayName:
+          type: string
+          description: Human-readable team name
+          example: "Marketing Team"
+        description:
+          type: string
+          example: "Product marketing and customer engagement"
+
+    CreateProjectRequest:
+      type: object
+      required: [name, displayName]
+      properties:
+        name:
+          type: string
+          pattern: '^[a-z0-9-]+$'
+          example: "mobile-app-v2"
+        displayName:
+          type: string
+          example: "Mobile App v2"
+        description:
+          type: string
+          example: "Next generation mobile application"
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: medium
+        dueDate:
+          type: string
+          format: date
+          example: "2024-06-01"
+
+    CreateTaskRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          example: "Implement user authentication"
+        description:
+          type: string
+          example: "Add JWT-based login system with role management"
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+          default: medium
+        estimatedHours:
+          type: integer
+          minimum: 1
+          example: 8
+        assignedTo:
+          type: string
+          example: "jane.smith"
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [todo, in_progress, completed, blocked]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        estimatedHours:
+          type: integer
+        actualHours:
+          type: integer
+        notes:
+          type: string
+
+    AssignTaskRequest:
+      type: object
+      required: [assignedTo]
+      properties:
+        assignedTo:
+          type: string
+          example: "jane.smith"
+        assignedBy:
+          type: string
+          example: "john.doe"
+
+    CreateCommentRequest:
+      type: object
+      required: [comment, author]
+      properties:
+        comment:
+          type: string
+          example: "Implemented basic JWT middleware, next up is role validation"
+        author:
+          type: string
+          example: "jane.smith"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [validation_error, not_found, conflict, forbidden, internal_error]
+              example: "not_found"
+            message:
+              type: string
+              example: "Resource not found"
+            details:
+              type: object
+              additionalProperties: true
+              example:
+                resource: "project"
+                id: "nonexistent-project"
+            suggestion:
+              type: string
+              example: "Check the resource ID and try again"
+
+    MetaInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+          example: 25
+        page:
+          type: integer
+          description: Current page number (1-based)
+          example: 1
+        limit:
+          type: integer
+          description: Items per page
+          example: 20
+        hasNext:
+          type: boolean
+          description: Whether there are more pages
+          example: true
+        filtered:
+          type: boolean
+          description: Whether results are filtered
+          example: false
+        filters:
+          type: object
+          additionalProperties: true
+          description: Applied filters
+          example:
+            status: "active" 

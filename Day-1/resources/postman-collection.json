@@ -1,0 +1,684 @@
+{
+	"info": {
+		"_postman_id": "taskflow-day1-collection",
+		"name": "Day 1: API Foundation & Design",
+		"description": "Complete collection for Day 1 activities:\n- API Treasure Hunt (5 APIs)\n- TaskFlow Demo endpoints\n- Status code testing scenarios\n\nImport this collection and the environment to get started immediately!",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🎯 API Treasure Hunt",
+			"item": [
+				{
+					"name": "1. JSONPlaceholder (Good Example)",
+					"item": [
+						{
+							"name": "Get Single Post",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://jsonplaceholder.typicode.com/posts/1",
+									"protocol": "https",
+									"host": ["jsonplaceholder", "typicode", "com"],
+									"path": ["posts", "1"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Posts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://jsonplaceholder.typicode.com/posts",
+									"protocol": "https",
+									"host": ["jsonplaceholder", "typicode", "com"],
+									"path": ["posts"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Info",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://jsonplaceholder.typicode.com/users/1",
+									"protocol": "https",
+									"host": ["jsonplaceholder", "typicode", "com"],
+									"path": ["users", "1"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Post (Test)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"My New Post\",\n  \"body\": \"This is test content\",\n  \"userId\": 1\n}"
+								},
+								"url": {
+									"raw": "https://jsonplaceholder.typicode.com/posts",
+									"protocol": "https",
+									"host": ["jsonplaceholder", "typicode", "com"],
+									"path": ["posts"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2. GitHub API (Excellent Example)",
+					"item": [
+						{
+							"name": "Get User - Octocat",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.github.v3+json"
+									}
+								],
+								"url": {
+									"raw": "https://api.github.com/users/octocat",
+									"protocol": "https",
+									"host": ["api", "github", "com"],
+									"path": ["users", "octocat"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Repository",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.github.v3+json"
+									}
+								],
+								"url": {
+									"raw": "https://api.github.com/repos/microsoft/vscode",
+									"protocol": "https",
+									"host": ["api", "github", "com"],
+									"path": ["repos", "microsoft", "vscode"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get API Rate Limits",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.github.v3+json"
+									}
+								],
+								"url": {
+									"raw": "https://api.github.com/rate_limit",
+									"protocol": "https",
+									"host": ["api", "github", "com"],
+									"path": ["rate_limit"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3. OpenWeather (Commercial Example)",
+					"item": [
+						{
+							"name": "Get Weather by City",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.openweathermap.org/data/2.5/weather?q=London&appid={{openweather_api_key}}",
+									"protocol": "https",
+									"host": ["api", "openweathermap", "org"],
+									"path": ["data", "2.5", "weather"],
+									"query": [
+										{
+											"key": "q",
+											"value": "London"
+										},
+										{
+											"key": "appid",
+											"value": "{{openweather_api_key}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Weather by Coordinates",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.openweathermap.org/data/2.5/weather?lat=51.5074&lon=-0.1278&appid={{openweather_api_key}}",
+									"protocol": "https",
+									"host": ["api", "openweathermap", "org"],
+									"path": ["data", "2.5", "weather"],
+									"query": [
+										{
+											"key": "lat",
+											"value": "51.5074"
+										},
+										{
+											"key": "lon",
+											"value": "-0.1278"
+										},
+										{
+											"key": "appid",
+											"value": "{{openweather_api_key}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4. REST Countries (Simple Example)",
+					"item": [
+						{
+							"name": "Get Country by Name",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://restcountries.com/v3.1/name/france",
+									"protocol": "https",
+									"host": ["restcountries", "com"],
+									"path": ["v3.1", "name", "france"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Countries by Region",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://restcountries.com/v3.1/region/europe",
+									"protocol": "https",
+									"host": ["restcountries", "com"],
+									"path": ["v3.1", "region", "europe"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Countries",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://restcountries.com/v3.1/all",
+									"protocol": "https",
+									"host": ["restcountries", "com"],
+									"path": ["v3.1", "all"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "5. HTTPBin (Testing Tool)",
+					"item": [
+						{
+							"name": "Test GET with parameters",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://httpbin.org/get?param1=value1&param2=value2",
+									"protocol": "https",
+									"host": ["httpbin", "org"],
+									"path": ["get"],
+									"query": [
+										{
+											"key": "param1",
+											"value": "value1"
+										},
+										{
+											"key": "param2",
+											"value": "value2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Test POST with JSON",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"TaskFlow Test\",\n  \"type\": \"API Learning\"\n}"
+								},
+								"url": {
+									"raw": "https://httpbin.org/post",
+									"protocol": "https",
+									"host": ["httpbin", "org"],
+									"path": ["post"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Test Status Codes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://httpbin.org/status/404",
+									"protocol": "https",
+									"host": ["httpbin", "org"],
+									"path": ["status", "404"]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "🚀 TaskFlow Demo API",
+			"item": [
+				{
+					"name": "Teams Management",
+					"item": [
+						{
+							"name": "Get All Teams",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Engineering Team",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams/engineering",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams", "engineering"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Team Projects",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams/engineering/projects",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams", "engineering", "projects"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Team Members",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams/engineering/members",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams", "engineering", "members"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create New Team",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"design\",\n  \"displayName\": \"Design Team\",\n  \"description\": \"User experience and visual design\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Project Management",
+					"item": [
+						{
+							"name": "Get Project Details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/projects/website-redesign",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["projects", "website-redesign"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Project in Team",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"mobile-app\",\n  \"displayName\": \"Mobile App v2\",\n  \"description\": \"Next generation mobile application\",\n  \"priority\": \"high\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams/engineering/projects",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams", "engineering", "projects"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Project Tasks",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/projects/website-redesign/tasks",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["projects", "website-redesign", "tasks"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Active Project Tasks",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/projects/website-redesign/tasks?status=active",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["projects", "website-redesign", "tasks"],
+									"query": [
+										{
+											"key": "status",
+											"value": "active"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Task Management",
+					"item": [
+						{
+							"name": "Get Task Details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{taskflow_base_url}}/tasks/task_001",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["tasks", "task_001"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Task in Project",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Implement user authentication\",\n  \"description\": \"Add JWT-based login system with role management\",\n  \"priority\": \"high\",\n  \"estimatedHours\": 8\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/projects/website-redesign/tasks",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["projects", "website-redesign", "tasks"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Assign Task to User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"assignedTo\": \"jane.smith\",\n  \"assignedBy\": \"john.doe\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/tasks/task_001/assign",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["tasks", "task_001", "assign"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Task Status",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"status\": \"in_progress\",\n  \"notes\": \"Started working on authentication flow\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/tasks/task_001",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["tasks", "task_001"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Task Comment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"comment\": \"Implemented basic JWT middleware, next up is role validation\",\n  \"author\": \"jane.smith\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/tasks/task_001/comments",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["tasks", "task_001", "comments"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "🧪 Status Code Scenarios",
+					"item": [
+						{
+							"name": "404 - Project Not Found",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"New Task\",\n  \"description\": \"Task for non-existent project\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/projects/nonexistent/tasks",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["projects", "nonexistent", "tasks"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "409 - Duplicate Team Name",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"engineering\",\n  \"displayName\": \"Engineering Team\",\n  \"description\": \"Duplicate team name\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "422 - Invalid Task Assignment",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"assignedTo\": \"user.not.in.team\"\n}"
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/tasks/task_001/assign",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["tasks", "task_001", "assign"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "400 - Invalid JSON",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"invalid-json\",\n  \"description\": \"Missing closing brace\""
+								},
+								"url": {
+									"raw": "{{taskflow_base_url}}/teams",
+									"host": ["{{taskflow_base_url}}"],
+									"path": ["teams"]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "taskflow_base_url",
+			"value": "https://api.taskflow-demo.com",
+			"type": "string"
+		},
+		{
+			"key": "openweather_api_key",
+			"value": "demo_key_replace_with_real",
+			"type": "string"
+		}
+	]
+} 

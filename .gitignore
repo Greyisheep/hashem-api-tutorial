@@ -205,3 +205,10 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+.qodo
+.qodo/
+Day-1/Day 1 Complete Implementation Guide - API Foundation & Design.pdf
+Day-1/Day 1 Resource Links & Setup Guide.pdf
+Day-1/Day 1 Slide Deck - API Foundation & Design.pdf
+5-Day API Course - Module-Aligned with Cohesive Project Build.txt

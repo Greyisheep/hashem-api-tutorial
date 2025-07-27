@@ -1,0 +1,49 @@
+{
+	"id": "taskflow-day1-environment",
+	"name": "TaskFlow Day 1 Environment",
+	"values": [
+		{
+			"key": "taskflow_base_url",
+			"value": "https://taskflow-demo.herokuapp.com/api/v1",
+			"description": "Base URL for TaskFlow demo API",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "openweather_api_key",
+			"value": "demo_key_for_class",
+			"description": "OpenWeather API key for demo purposes",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "demo_user_token",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.demo.token",
+			"description": "Demo JWT token for authenticated requests",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "team_id",
+			"value": "engineering",
+			"description": "Default team ID for demos",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "project_id",
+			"value": "website-redesign",
+			"description": "Default project ID for demos",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "task_id",
+			"value": "task_001",
+			"description": "Default task ID for demos",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+} 
