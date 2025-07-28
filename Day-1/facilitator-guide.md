@@ -132,24 +132,31 @@ By 4:00 PM, students should be able to:
 
 ### 2:30-2:45 PM: Break (15 min)
 **Your prep time**: Prepare gRPC demo environment
+- **Test**: Run `./start-real-demo.sh` to ensure demo works
+- **Verify**: Docker is running and ports are available
+- **Backup**: Have screenshots ready in case of technical issues
 
 ### 2:45-3:30 PM: Module 2D - gRPC vs REST Deep Dive (45 min)
 
 #### Your Demo (15 min)
 **Materials**: [`demos/grpc-demo-materials.md`](./demos/grpc-demo-materials.md)
-- **Show**: Live performance comparison
-- **Highlight**: Streaming capabilities
+- **Setup**: Run `./start-real-demo.sh` in `demos/grpc-demo/` directory
+- **Show**: Real gRPC server-client communication with live streaming
+- **Highlight**: Performance comparison (REST: 410ms vs gRPC: 75ms - 82% faster)
+- **Demonstrate**: All 4 RPC types (unary, server streaming, client streaming, bidirectional)
 - **Energy**: Technical excitement, but accessible
 
 #### Internal vs External APIs (15 min)
 **Question**: "When do you choose gRPC over REST?"
 - **Framework**: Constraints, not preferences
 - **Real examples**: Public API (REST) vs internal services (gRPC)
+- **Key insight**: "It's about use case constraints, not personal preference"
 
 #### Protocol Buffer Design (15 min)
 **Activity**: Design .proto for TaskFlow notifications
 - **Focus**: Type safety and contracts
 - **Compare**: To JSON schema design
+- **Hands-on**: Students can modify the existing .proto file and see code generation
 
 ### 3:30-3:45 PM: Module 2E - Integration Reality Check (15 min)
 
@@ -258,11 +265,13 @@ By 4:00 PM, students should be able to:
 **Excalidraw access**: Google Drawings as alternative
 **API endpoints down**: Have screenshots as backup
 **VS Code issues**: Browser dev tools work for GET requests
+**gRPC demo issues**: Check Docker is running, try `docker-compose -f docker-compose-simple.yml down && ./start-real-demo.sh`
 
 ### Backup Plans:
 **No internet**: Printed worksheets for all activities
 **Tool failures**: Physical sticky notes and whiteboards
 **Demo failures**: Pre-recorded screenshots and videos
+**gRPC demo fails**: Use the simulation script or show pre-recorded demo
 **Time pressure**: Skip OpenAPI contract activity if needed
 
 ---
@@ -272,8 +281,10 @@ By 4:00 PM, students should be able to:
 ### Immediate (End of Day 1):
 - [ ] Students can explain DDD principles in their own words
 - [ ] Can design RESTful endpoints using business language
-- [ ] Understand when to choose different API protocols
+- [ ] Understand when to choose different API protocols (REST vs gRPC)
 - [ ] Can handle error scenarios appropriately
+- [ ] Have seen real gRPC communication with live streaming
+- [ ] Understand performance implications of protocol choice
 
 ### Forward-looking (Setup for Day 2):
 - [ ] Students excited about implementation
