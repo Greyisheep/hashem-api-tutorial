@@ -6,12 +6,15 @@
 
 By the end of Day 1, students will be able to:
 - [ ] Classify APIs by type and use case (REST, GraphQL, gRPC, SOAP, WebSocket)
-- [ ] Map business domains to API structure  
+- [ ] Map business domains to API structure
 - [ ] Design REST endpoints using domain language
 - [ ] Choose appropriate HTTP status codes
 - [ ] Explain when to use different API protocols (REST vs GraphQL vs gRPC)
 - [ ] Design clean facades for legacy systems
 - [ ] Understand API lifecycle and best practices
+- [ ] Implement envelope pattern for consistent responses
+- [ ] Connect user stories to technical implementation
+- [ ] Apply response pattern best practices
 
 ## Schedule Overview
 
