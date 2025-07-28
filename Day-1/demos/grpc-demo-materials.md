@@ -78,6 +78,29 @@ message TaskCollaboration {
 
 ---
 
+## 🚀 Running the REAL gRPC Demo
+
+### Quick Start (Recommended)
+```bash
+cd Day-1/demos/grpc-demo
+./start-real-demo.sh
+```
+
+This will:
+1. Start a real gRPC server with all 4 RPC types
+2. Run a client that tests all functionality
+3. Show actual performance metrics
+4. Demonstrate real-time streaming
+
+### What You'll See:
+- **Unary RPC**: GetTeamPerformance (~110ms response time)
+- **Server Streaming**: Real-time task updates every 2 seconds
+- **Client Streaming**: Batch processing of 4 task updates
+- **Bidirectional**: Live collaboration messages
+- **Performance Comparison**: REST vs gRPC metrics
+
+---
+
 ## Live Performance Comparison Demo
 
 ### Scenario: Get team performance data
@@ -203,15 +226,11 @@ const performance = await client.getTeamPerformance({team_id: 'eng', days_back: 
 - "Notice the streaming capabilities - server can push data to clients"
 - "Type safety is built-in - no more runtime JSON parsing errors"
 
-### Performance demo (5 min):
-- "Let's compare getting team performance data"
-- Run both REST and gRPC calls side by side
-- "Notice the difference in response time and payload size"
-
-### Streaming demo (3 min):
-- "Here's the real power - watch real-time task updates"
-- Start gRPC stream, simulate task updates
-- "No polling, no missed updates, no delays"
+### Run the REAL demo (8 min):
+- "Let's run the actual gRPC demo"
+- Execute `./start-real-demo.sh`
+- "Watch the real-time streaming and performance differences"
+- "Notice how the server pushes updates without polling"
 
 ### Decision framework (2 min):
 - "So when would you choose each?"

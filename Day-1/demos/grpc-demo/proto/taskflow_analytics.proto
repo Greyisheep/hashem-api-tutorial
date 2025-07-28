@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package taskflow.analytics;
+
+service TaskAnalytics {
+  // Unary RPC - get team performance
+  rpc GetTeamPerformance(TeamRequest) returns (TeamPerformance);
+  
+  // Server streaming - real-time task updates
+  rpc StreamTaskUpdates(TaskStreamRequest) returns (stream TaskUpdate);
+  
+  // Client streaming - batch task updates
+  rpc BatchUpdateTasks(stream TaskUpdateRequest) returns (BatchResponse);
+  
+  // Bidirectional streaming - real-time collaboration
+  rpc CollaborateOnTask(stream TaskCollaboration) returns (stream TaskCollaboration);
+}
+
+message TeamRequest {
+  string team_id = 1;
+  int32 days_back = 2;
+}
+
+message TeamPerformance {
+  string team_id = 1;
+  int32 completed_tasks = 2;
+  int32 overdue_tasks = 3;
+  float velocity = 4;
+  repeated TaskMetric task_metrics = 5;
+}
+
+message TaskUpdate {
+  string task_id = 1;
+  string status = 2;
+  string assigned_to = 3;
+  int64 timestamp = 4;
+}
+
+message TaskMetric {
+  string task_id = 1;
+  string title = 2;
+  int32 days_to_complete = 3;
+  string complexity = 4;
+}
+
+message TaskStreamRequest {
+  string team_id = 1;
+  repeated string status_filter = 2;
+}
+
+message TaskUpdateRequest {
+  string task_id = 1;
+  string new_status = 2;
+  string user_id = 3;
+}
+
+message BatchResponse {
+  int32 successful_updates = 1;
+  int32 failed_updates = 2;
+  repeated string error_messages = 3;
+}
+
+message TaskCollaboration {
+  string task_id = 1;
+  string user_id = 2;
+  string action = 3;
+  string data = 4;
+  int64 timestamp = 5;
+} 
