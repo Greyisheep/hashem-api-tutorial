@@ -14,10 +14,28 @@ Project {
 }
 
 Task {
-  id, title, description, status, assignee
+  id, title, description, status, assignee, user_story
   Project, Comments[]
 }
+
+User {
+  id, username, email, full_name, role
+  Tasks[], Comments[]
+}
+
+Comment {
+  id, content, author, task_id
+  Task
+}
+
+UserStory {
+  id, as_a, i_want, so_that, acceptance_criteria[], priority
+  Tasks[]
+}
 ```
+
+## Current Implementation Status:
+Our API currently has basic Task CRUD operations. Let's extend it with the full domain model!
 
 ## Your Challenge: Design REST endpoints
 
@@ -32,6 +50,8 @@ Task {
 - How do you assign a task to someone?
 - How do you handle nested resources?
 - What about bulk operations?
+- How do user stories connect to tasks?
+- How do you prioritize work based on user stories?
 
 ---
 
@@ -74,6 +94,18 @@ POST   /________________________________  (assign task)
 POST   /________________________________  (add comment)
 ```
 
+### User Stories Domain:
+```
+HTTP_METHOD /endpoint_path
+
+GET    /________________________________  (all user stories)
+POST   /________________________________  (create user story)
+GET    /________________________________  (specific user story)
+PUT    /________________________________  (update user story)
+GET    /________________________________  (tasks for story)
+POST   /________________________________  (link task to story)
+```
+
 ---
 
 ## Design Decisions:
@@ -98,6 +130,38 @@ POST   /________________________________  (add comment)
 **Your Design**: ________________________________
 
 ### 4. Cross-Domain Operations
+
+**Question**: How do you handle "get all tasks assigned to user X across all projects"?
+
+**Your Design**: ________________________________
+
+---
+
+## Testing Your Design
+
+### 1. Test Current API
+```bash
+# Start the API
+cd taskflow-api
+docker-compose up --build
+
+# Test existing endpoints
+curl http://localhost:8000/tasks
+curl http://localhost:8000/tasks/task_001
+```
+
+### 2. Design New Endpoints
+Based on your REST mapping above, what endpoints would you add next?
+
+**Priority 1**: ________________________________
+**Priority 2**: ________________________________
+**Priority 3**: ________________________________
+
+### 3. Implementation Plan
+Which domain would you implement first for the take-home assignment?
+
+**My Choice**: ________________________________
+**Reason**: ________________________________
 **Question**: What if you need "all tasks assigned to user X across all projects"?
 
 **Your Solution**: ________________________________

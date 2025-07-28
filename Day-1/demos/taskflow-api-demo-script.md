@@ -1,190 +1,195 @@
-# TaskFlow API Demo Script (10 minutes)
+# TaskFlow API Demo Script - Day 1
 
-## 1. Business Overview (2 min)
+## 🎯 Demo Objectives
+- Show a working API that students can immediately use
+- Demonstrate business language in URLs and user stories
+- Show envelope pattern for consistent responses
+- Demonstrate proper error handling and status codes
+- Introduce the collaborative development workflow
 
-### Opening Statement:
-"TaskFlow is a project management system for software teams. Let me show you the complete API and how we've designed it to speak business language, not database language."
+## 🚀 Setup (5 minutes before demo)
 
-### Demo Points:
-- **Show**: Complete OpenAPI documentation with all endpoints
-- **Highlight**: How business language appears in API design
-- **Point out**: No technical jargon in URLs or responses
-
----
-
-## 2. Domain Structure (3 min)
-
-### Show File Structure:
-```
-taskflow/
-├── teams/           # Team Management Domain
-│   ├── endpoints/
-│   ├── models/
-│   └── services/
-├── projects/        # Project Planning Domain  
-│   ├── endpoints/
-│   ├── models/
-│   └── services/
-├── tasks/          # Task Execution Domain
-│   ├── endpoints/
-│   ├── models/
-│   └── services/
-├── users/          # User Identity Domain
-│   ├── endpoints/
-│   ├── models/
-│   └── services/
-└── notifications/  # Communication Domain
-    ├── endpoints/
-    ├── models/
-    └── services/
-```
-
-### Key Messages:
-- "Each directory represents a business capability"
-- "Notice how the structure mirrors how the business thinks about work"
-- "No generic 'models' or 'controllers' - everything is domain-specific"
-
----
-
-## 3. API Design Philosophy (3 min)
-
-### Show Examples:
-
-#### ✅ Business-Focused URLs:
-```
-GET  /teams/engineering/projects
-POST /teams/engineering/projects
-GET  /projects/website-redesign/tasks
-POST /projects/website-redesign/tasks
-PUT  /tasks/implement-login/assign
-POST /tasks/implement-login/comments
-```
-
-#### ❌ Technical-Focused URLs (What NOT to do):
-```
-GET  /api/v1/user-project-assignments?filter=active
-POST /api/v1/task-status-updates
-GET  /api/v1/team-member-relationships
-```
-
-### Key Messages:
-- "URLs should read like business conversations"
-- "Error messages use business terms, not database errors"
-- "A product manager should understand our API documentation"
-
----
-
-## 4. Real Endpoints (2 min)
-
-### Live Demo Calls:
-
-#### 1. Get Team's Projects:
+### 1. Start the API
 ```bash
-GET /teams/engineering/projects
-
-Response:
-{
-  "projects": [
-    {
-      "id": "proj_001",
-      "name": "Website Redesign",
-      "status": "in_progress",
-      "teamId": "engineering",
-      "tasksCount": 12,
-      "completedTasks": 8
-    }
-  ]
-}
+cd taskflow-api
+docker-compose up --build
 ```
 
-#### 2. Create New Task:
+### 2. Verify it's working
 ```bash
-POST /projects/website-redesign/tasks
-Content-Type: application/json
-
-{
-  "title": "Implement user authentication",
-  "description": "Add JWT-based login system",
-  "priority": "high",
-  "assignedTo": "john.doe"
-}
-
-Response: 201 Created
-{
-  "task": {
-    "id": "task_001",
-    "title": "Implement user authentication",
-    "status": "todo",
-    "createdAt": "2024-01-15T10:30:00Z",
-    "project": "website-redesign"
-  }
-}
+curl http://localhost:8001/health
+# Should return envelope pattern response
 ```
 
-#### 3. Assign Task:
+### 3. Open browser tabs
+- API Root: http://localhost:8001
+- Interactive Docs: http://localhost:8001/docs
+- Health Check: http://localhost:8001/health
+
+---
+
+## 🎪 Demo Flow (12 minutes)
+
+### Opening (1 minute)
+"Let's look at what we're building today. This is a real, working API that demonstrates business-focused design, user stories, and production-ready response patterns."
+
+### 1. Show API Root & Response Patterns (2 minutes)
 ```bash
-PUT /tasks/task_001/assign
-Content-Type: application/json
+curl http://localhost:8001
+```
+**Key Point**: "Notice the envelope pattern - consistent structure with success indicator, data, message, and timestamp."
 
-{
-  "assignedTo": "jane.smith"
-}
+### 2. Show Response Pattern Comparison (2 minutes)
+```bash
+# Envelope pattern
+curl http://localhost:8001/response-patterns/envelope
 
-Response: 200 OK
-{
-  "task": {
-    "id": "task_001",
-    "assignedTo": "jane.smith",
-    "assignedAt": "2024-01-15T10:35:00Z"
-  }
-}
+# Direct response
+curl http://localhost:8001/response-patterns/direct
+```
+**Key Point**: "Envelope pattern provides consistency, metadata, and better error handling for clients."
+
+### 3. Show Interactive Documentation (2 minutes)
+Navigate to http://localhost:8001/docs
+
+**Demonstrate**:
+- Click "Try it out" on GET /tasks
+- Show the envelope response structure
+- Click "Try it out" on POST /tasks
+- Show the request body schema with user story field
+- Execute with sample data
+
+**Key Point**: "This documentation is automatically generated from our code. API-first design!"
+
+### 4. Show Business Language & User Stories (3 minutes)
+```bash
+# Get all tasks
+curl http://localhost:8001/tasks
+
+# Get specific task
+curl http://localhost:8001/tasks/task_001
+
+# Create new task with user story
+curl -X POST http://localhost:8001/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Learn API Design", 
+    "description": "Study REST principles",
+    "user_story": "As a developer, I want to learn API design so that I can build better systems"
+  }'
+
+# Show user stories endpoint
+curl http://localhost:8001/user-stories
 ```
 
----
+**Key Point**: "Notice the URLs speak business language: `/tasks`, not `/api/v1/task_entities`. User stories connect technical work to business value."
 
-## Demo Tips for Instructor:
+### 5. Show Error Handling with Envelope (2 minutes)
+```bash
+# 404 - Task not found
+curl http://localhost:8001/tasks/nonexistent
 
-### Before Demo:
-- [ ] Have Postman collection ready with working requests
-- [ ] Prepare sample data in demo database
-- [ ] Test all endpoints are responding correctly
-- [ ] Have backup screenshots if API is down
+# 400 - Bad request demo
+curl http://localhost:8001/error/400
 
-### During Demo:
-- **Keep it conversational**: "Notice how..."
-- **Pause for questions**: "What do you think about this approach?"
-- **Compare alternatives**: "This could also be designed as..."
-- **Highlight business language**: Point out readable URLs
+# 500 - Server error demo
+curl http://localhost:8001/error/500
+```
 
-### After Demo:
-- **Ask for reactions**: "What stands out to you?"
-- **Connect to their experience**: "How is this different from APIs you've used?"
-- **Preview next activity**: "Now you'll design similar endpoints..."
+**Key Point**: "Proper error handling with envelope pattern - consistent structure even for errors."
 
 ---
 
-## Common Student Questions & Answers:
+## 🎯 Key Messages to Reinforce
 
-### Q: "Why not just use `/projects?team=engineering`?"
-**A**: "Great question! Nested resources show the relationship clearly. `/teams/engineering/projects` reads like business language: 'Show me the engineering team's projects.' Query parameters feel more like filtering than relationships."
+### 1. **Response Pattern Benefits**
+- Envelope pattern provides consistency across all endpoints
+- Metadata (timestamp, version) included automatically
+- Success indicators make client code simpler
+- Extensible for future needs like pagination, caching info
 
-### Q: "What if a task belongs to multiple projects?"
-**A**: "Excellent edge case! That would suggest our domain model needs refinement. Maybe we need a different entity like 'Epic' that spans projects, or we accept that tasks belong to one project but can reference others."
+### 2. **Business Language & User Stories**
+- URLs like `/tasks` not `/api/v1/task_entities`
+- User stories follow standard format (As a... I want... So that...)
+- Business context in every endpoint
+- Acceptance criteria define success
 
-### Q: "How do you handle pagination on these nested endpoints?"
-**A**: "Standard query parameters: `/teams/engineering/projects?page=1&limit=20`. The business relationship stays in the URL, pagination stays in query params."
+### 3. **Developer Experience**
+- Interactive documentation
+- Consistent response format with envelope pattern
+- Clear error messages with proper structure
+- Easy to test and explore
 
-### Q: "What about performance with all these nested calls?"
-**A**: "Good thinking! That's where GraphQL shines for frontend needs, or we provide flattened endpoints for specific use cases. Always design for clarity first, optimize for performance second."
+### 4. **Production Ready**
+- Health check endpoints
+- Proper status codes with envelope pattern
+- Docker containerization
+- API versioning ready
+
+### 5. **Collaborative Development**
+- "You'll all be contributing to this API today"
+- "We'll extend it with new domains"
+- "You'll review each other's code"
+- "This is how real teams work"
 
 ---
 
-## Connection to Next Activity:
+## 🚨 Troubleshooting
 
-"Now you've seen TaskFlow's complete design. In the next 20 minutes, you'll model the domains yourself using sticky notes and identify the same boundaries we discovered. Ready to get hands-on?"
+### If Docker fails:
+```bash
+# Check Docker is running
+docker --version
+
+# Try rebuilding
+docker-compose down
+docker-compose up --build
+```
+
+### If API doesn't start:
+```bash
+# Check logs
+docker-compose logs
+
+# Check port availability
+netstat -an | grep 8001
+```
+
+### Backup plan:
+- Use screenshots of working API
+- Show pre-recorded demo video
+- Use Postman collection as backup
 
 ---
 
-**Demo Duration**: 10 minutes maximum
-**Energy Level**: High enthusiasm, conversational
-**Outcome**: Students understand domain-driven API design principles 
+## 🎬 Demo Script (Word-for-word)
+
+### Opening
+"Welcome to Day 1! Before we dive into theory, let's look at what we're actually building. This is a real, working API that demonstrates business-focused design, user stories, and production-ready response patterns."
+
+### During Demo
+"Notice the envelope pattern - every response has the same structure with success indicator, data, message, and timestamp. This makes client code much simpler."
+
+"Look at how user stories connect technical work to business value. This is what makes APIs truly useful."
+
+"See how we handle errors? Consistent envelope pattern even for errors. This is production-ready error handling."
+
+### Closing
+"This is your foundation. You'll be extending this API with new domains, adding features, and collaborating with your peers. Let's get started!"
+
+---
+
+## 📋 Post-Demo Checklist
+
+- [ ] API is running and accessible
+- [ ] Students can access http://localhost:8001/docs
+- [ ] Postman collection is imported
+- [ ] Students understand envelope pattern benefits
+- [ ] Students see user story integration
+- [ ] Students understand they'll be contributing
+- [ ] Questions answered about setup
+- [ ] Ready to move to hands-on activities
+
+---
+
+**Remember**: This demo sets the tone for the entire day. Show enthusiasm for the technology and confidence in the learning approach! 

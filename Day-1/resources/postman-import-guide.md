@@ -33,7 +33,7 @@
 2. **Open** "Teams Management"
 3. **Click** "Get All Teams"
 4. **Send** request
-5. **Should see** mock response or connection error (expected if no server running)
+5. **Should see** API response or connection error (expected if Docker not running)
 
 ---
 
@@ -95,12 +95,9 @@ The environment includes these variables:
 
 | Variable | Description | Example Value |
 |----------|-------------|---------------|
-| `taskflow_base_url` | Base URL for TaskFlow API | `https://taskflow-demo.herokuapp.com/api/v1` |
+| `local_api_url` | Local TaskFlow API URL | `http://localhost:8000` |
 | `openweather_api_key` | API key for weather service | `demo_key_for_class` |
-| `demo_user_token` | JWT token for auth demos | `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.demo.token` |
-| `team_id` | Default team for demos | `engineering` |
-| `project_id` | Default project for demos | `website-redesign` |
-| `task_id` | Default task for demos | `task_001` |
+| `task_id` | Default task for testing | `task_001` |
 
 ---
 
@@ -112,8 +109,8 @@ The environment includes these variables:
 - **Look for**: Good vs bad API design patterns
 
 ### TaskFlow Demo (11:00 AM):
-- **Use folder**: "🚀 TaskFlow Demo API" 
-- **Show progression**: Teams → Projects → Tasks
+- **Use folder**: "🚀 Local Development Setup" 
+- **Show progression**: Health check → Tasks → CRUD operations
 - **Highlight**: Business-focused URLs and responses
 
 ### Status Code Scenarios (1:45 PM):
@@ -135,8 +132,8 @@ The environment includes these variables:
 - **Variables not working**: Click gear icon → check environment variables are set
 
 ### API calls failing:
-- **Expected behavior**: TaskFlow API calls will fail without running server
-- **Use for demo**: Show connection errors, then explain mock server setup
+- **Expected behavior**: Local API calls will fail without running Docker
+- **Use for demo**: Show connection errors, then start with `docker-compose up --build`
 - **Treasure Hunt APIs**: Should work (external public APIs)
 
 ### OpenWeather API key needed:
@@ -156,9 +153,9 @@ The environment includes these variables:
 
 ### For Instructors:
 1. **Test all endpoints** before class
-2. **Set up mock server** for TaskFlow demos (see [demo environment setup](../demos/demo-environment-setup.md))
+2. **Start Docker container** for TaskFlow demos (see [demo script](../demos/taskflow-api-demo-script.md))
 3. **Have backup plan** (screenshots) if APIs are down
-4. **Use variable substitution** (e.g., `{{taskflow_base_url}}`) in demos
+4. **Use variable substitution** (e.g., `{{local_api_url}}`) in demos
 
 ---
 

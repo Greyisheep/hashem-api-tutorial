@@ -20,7 +20,9 @@ By 4:00 PM, students should be able to:
 **Your Role**: Set energy, verify environment, establish "production mindset"
 
 #### Pre-flight Checklist:
-- [ ] All students have Postman Desktop working
+- [ ] All students have Docker Desktop installed and running
+- [ ] All students can access the taskflow-api repository
+- [ ] Postman Desktop working (or web version as backup)
 - [ ] VS Code with REST Client extension installed
 - [ ] Can access Excalidraw/drawing tool
 - [ ] Timer visible to group
@@ -47,23 +49,26 @@ By 4:00 PM, students should be able to:
 - **Pair up**: 2 pairs of 2 students
 - **Competition**: "Which pair gets more correct?"
 - **Debrief**: Focus on constraints driving decisions
+- **Key Learning**: REST vs GraphQL vs gRPC decision framework
 
 ### 10:45-11:00 AM: Break (15 min)
 **Your prep time**: Set up Excalidraw board, prepare demo environment
 
 ### 11:00-12:00 PM: Module 2A - Domain-Driven TaskFlow Architecture (60 min)
 
-#### Your Demo First (10 min)
+#### Your Demo First (12 min)
 **Materials**: [`demos/taskflow-api-demo-script.md`](./demos/taskflow-api-demo-script.md)
-- **Key message**: APIs should speak business language
-- **Show**: Live endpoints, business-focused URLs
+- **Key message**: APIs should speak business language and use consistent response patterns
+- **Show**: Live running API with Docker, envelope pattern, user stories, business-focused URLs
 - **Energy**: Conversational, pause for questions
+- **Setup**: Run `docker-compose up --build` in taskflow-api directory
 
 #### DDD Fundamentals (15 min)
 **Discussion prompts**:
 - "Looking at TaskFlow, what business capabilities do you see?"
 - "Which of these could exist independently?"
 - "Where do you see the most complexity?"
+- "How do user stories help us understand domain boundaries?"
 
 **Your role**: Guide, don't lecture. Let them discover domain boundaries.
 
@@ -88,7 +93,7 @@ By 4:00 PM, students should be able to:
 #### Domain-to-REST Mapping (15 min)
 **Materials**: [`exercises/domain-to-rest-mapping.md`](./exercises/domain-to-rest-mapping.md)
 - **Build on**: Morning's domain model
-- **Focus**: Business language in URLs
+- **Focus**: Business language in URLs and user stories
 - **Common mistake**: Technical database thinking
 
 #### Cross-Domain Operations (10 min)
@@ -98,8 +103,8 @@ By 4:00 PM, students should be able to:
 
 #### OpenAPI Contract Design (10 min)
 **Activity**: Write OpenAPI spec for task creation
-- **Focus**: Business requirements driving API design
-- **Validate**: Does spec reflect domain language?
+- **Focus**: Business requirements driving API design, including user stories
+- **Validate**: Does spec reflect domain language and response patterns?
 
 #### Documentation Standards (10 min)
 **Question**: "How do you keep docs synchronized with code?"
@@ -118,11 +123,12 @@ By 4:00 PM, students should be able to:
 **Question**: "How do you handle cascading failures?"
 - Discuss circuit breakers, timeouts
 - Real-world war stories
+- **Key point**: Envelope pattern helps with consistent error handling
 
 #### Error Response Design (15 min)
 **Activity**: Design professional error responses
 - **Compare**: Technical vs business-friendly errors
-- **Focus**: Actionable error messages
+- **Focus**: Actionable error messages and envelope pattern benefits
 
 ### 2:30-2:45 PM: Break (15 min)
 **Your prep time**: Prepare gRPC demo environment
@@ -145,7 +151,7 @@ By 4:00 PM, students should be able to:
 - **Focus**: Type safety and contracts
 - **Compare**: To JSON schema design
 
-### 3:30-4:00 PM: Module 2E - Integration Reality Check (30 min)
+### 3:30-3:45 PM: Module 2E - Integration Reality Check (15 min)
 
 #### Legacy API Challenge (15 min)
 **Materials**: [`exercises/legacy-integration-challenge.md`](./exercises/legacy-integration-challenge.md)
@@ -153,11 +159,21 @@ By 4:00 PM, students should be able to:
 - **Focus**: Clean facades hiding ugly legacy systems
 - **Energy**: Fun and relatable - everyone has legacy pain
 
-#### Integration War Stories (15 min)
-**Question**: "How do you handle unreliable external APIs?"
-- **Share**: Your own integration challenges
-- **Collect**: Student experiences
-- **Strategies**: Caching, circuit breakers, graceful degradation
+### 3:45-4:00 PM: Module 2F - Repository Collaboration & Take-Home (15 min)
+
+#### GitHub Setup & Contribution (10 min)
+**Activity**: Fork and contribute to taskflow-api repository
+- **Setup**: Each student forks the main repository
+- **Task**: Add a new endpoint to the API (e.g., `/users` endpoint)
+- **Process**: Create feature branch, implement, test, submit PR
+- **Learning**: Real-world collaboration workflow
+
+#### Take-Home Assignment (5 min)
+**Materials**: [`exercises/take-home-assignment.md`](./exercises/take-home-assignment.md)
+- **Individual**: Extend the API with new domain (e.g., notifications, comments)
+- **Collaborative**: Review and merge each other's PRs
+- **Documentation**: Update API documentation
+- **Due**: Before Day 2 starts
 
 ---
 
@@ -229,6 +245,9 @@ By 4:00 PM, students should be able to:
 - [ ] Error response patterns
 - [ ] API type decision framework
 - [ ] Legacy integration strategy
+- [ ] Forked taskflow-api repository
+- [ ] Submitted at least one PR with new endpoint
+- [ ] Reviewed at least one peer's PR
 
 ---
 

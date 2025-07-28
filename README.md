@@ -97,6 +97,19 @@ hashem-api-tutorial/
 
 ## Getting Started
 
+### Quick Start (Day 1)
+```bash
+# Navigate to the API project
+cd taskflow-api
+
+# Start with Docker (Recommended)
+docker-compose up --build
+
+# Or use the start script
+./start.sh  # Linux/Mac
+start.bat   # Windows
+```
+
 1. **Day 1 Setup**: Navigate to `Day-1/` directory
 2. **Follow the progression**: Each day builds on the previous
 3. **Hands-on focus**: 80% practical implementation, 20% strategic discussion

@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "taskflow-day1-collection",
+		"_postman_id": "day1-api-foundation",
 		"name": "Day 1: API Foundation & Design",
-		"description": "Complete collection for Day 1 activities:\n- API Treasure Hunt (5 APIs)\n- TaskFlow Demo endpoints\n- Status code testing scenarios\n\nImport this collection and the environment to get started immediately!",
+		"description": "Complete collection for Day 1 activities:\n- API Treasure Hunt (5 Real APIs)\n- Local Development Setup\n- Status code testing scenarios\n\nImport this collection and the environment to get started immediately!",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -284,7 +284,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"name\": \"TaskFlow Test\",\n  \"type\": \"API Learning\"\n}"
+									"raw": "{\n  \"name\": \"API Learning\",\n  \"type\": \"Educational\"\n}"
 								},
 								"url": {
 									"raw": "https://httpbin.org/post",
@@ -314,365 +314,283 @@
 			]
 		},
 		{
-			"name": "🚀 TaskFlow Demo API",
+			"name": "🚀 Local Development Setup",
 			"item": [
 				{
-					"name": "Teams Management",
-					"item": [
-						{
-							"name": "Get All Teams",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Engineering Team",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams/engineering",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams", "engineering"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Team Projects",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams/engineering/projects",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams", "engineering", "projects"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Team Members",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams/engineering/members",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams", "engineering", "members"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Create New Team",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"name\": \"design\",\n  \"displayName\": \"Design Team\",\n  \"description\": \"User experience and visual design\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams"]
-								}
-							},
-							"response": []
+					"name": "API Root",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/",
+							"host": ["{{local_api_url}}"],
+							"path": [""]
 						}
-					]
+					},
+					"response": []
 				},
 				{
-					"name": "Project Management",
-					"item": [
-						{
-							"name": "Get Project Details",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/projects/website-redesign",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["projects", "website-redesign"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Create Project in Team",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"name\": \"mobile-app\",\n  \"displayName\": \"Mobile App v2\",\n  \"description\": \"Next generation mobile application\",\n  \"priority\": \"high\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams/engineering/projects",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams", "engineering", "projects"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Project Tasks",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/projects/website-redesign/tasks",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["projects", "website-redesign", "tasks"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Active Project Tasks",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/projects/website-redesign/tasks?status=active",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["projects", "website-redesign", "tasks"],
-									"query": [
-										{
-											"key": "status",
-											"value": "active"
-										}
-									]
-								}
-							},
-							"response": []
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/health",
+							"host": ["{{local_api_url}}"],
+							"path": ["health"]
 						}
-					]
+					},
+					"response": []
 				},
 				{
-					"name": "Task Management",
-					"item": [
-						{
-							"name": "Get Task Details",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{taskflow_base_url}}/tasks/task_001",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["tasks", "task_001"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Create Task in Project",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"title\": \"Implement user authentication\",\n  \"description\": \"Add JWT-based login system with role management\",\n  \"priority\": \"high\",\n  \"estimatedHours\": 8\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/projects/website-redesign/tasks",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["projects", "website-redesign", "tasks"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Assign Task to User",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"assignedTo\": \"jane.smith\",\n  \"assignedBy\": \"john.doe\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/tasks/task_001/assign",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["tasks", "task_001", "assign"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update Task Status",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"status\": \"in_progress\",\n  \"notes\": \"Started working on authentication flow\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/tasks/task_001",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["tasks", "task_001"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Add Task Comment",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"comment\": \"Implemented basic JWT middleware, next up is role validation\",\n  \"author\": \"jane.smith\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/tasks/task_001/comments",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["tasks", "task_001", "comments"]
-								}
-							},
-							"response": []
+					"name": "API Documentation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/docs",
+							"host": ["{{local_api_url}}"],
+							"path": ["docs"]
 						}
-					]
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📝 Task Management (CRUD)",
+			"item": [
+				{
+					"name": "Get All Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/tasks",
+							"host": ["{{local_api_url}}"],
+							"path": ["tasks"]
+						}
+					},
+					"response": []
 				},
 				{
-					"name": "🧪 Status Code Scenarios",
-					"item": [
-						{
-							"name": "404 - Project Not Found",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"title\": \"New Task\",\n  \"description\": \"Task for non-existent project\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/projects/nonexistent/tasks",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["projects", "nonexistent", "tasks"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "409 - Duplicate Team Name",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"name\": \"engineering\",\n  \"displayName\": \"Engineering Team\",\n  \"description\": \"Duplicate team name\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "422 - Invalid Task Assignment",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"assignedTo\": \"user.not.in.team\"\n}"
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/tasks/task_001/assign",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["tasks", "task_001", "assign"]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "400 - Invalid JSON",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"name\": \"invalid-json\",\n  \"description\": \"Missing closing brace\""
-								},
-								"url": {
-									"raw": "{{taskflow_base_url}}/teams",
-									"host": ["{{taskflow_base_url}}"],
-									"path": ["teams"]
-								}
-							},
-							"response": []
+					"name": "Get Specific Task",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/tasks/task_001",
+							"host": ["{{local_api_url}}"],
+							"path": ["tasks", "task_001"]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Learn API Design\",\n  \"description\": \"Study REST principles and HTTP methods\",\n  \"user_story\": \"As a developer, I want to learn API design so that I can build better systems\"\n}"
+						},
+						"url": {
+							"raw": "{{local_api_url}}/tasks",
+							"host": ["{{local_api_url}}"],
+							"path": ["tasks"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"completed\",\n  \"title\": \"Learn FastAPI - Updated\"\n}"
+						},
+						"url": {
+							"raw": "{{local_api_url}}/tasks/task_001",
+							"host": ["{{local_api_url}}"],
+							"path": ["tasks", "task_001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/tasks/task_002",
+							"host": ["{{local_api_url}}"],
+							"path": ["tasks", "task_002"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📖 User Stories (Business Context)",
+			"item": [
+				{
+					"name": "Get All User Stories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/user-stories",
+							"host": ["{{local_api_url}}"],
+							"path": ["user-stories"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific User Story",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/user-stories/story_001",
+							"host": ["{{local_api_url}}"],
+							"path": ["user-stories", "story_001"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User Story",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"as_a\": \"team lead\",\n  \"i_want\": \"to assign tasks to team members\",\n  \"so_that\": \"I can distribute work effectively\",\n  \"acceptance_criteria\": [\n    \"Can assign task to specific user\",\n    \"Can set priority levels\",\n    \"Can add due dates\"\n  ],\n  \"priority\": \"high\"\n}"
+						},
+						"url": {
+							"raw": "{{local_api_url}}/user-stories",
+							"host": ["{{local_api_url}}"],
+							"path": ["user-stories"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔄 Response Patterns",
+			"item": [
+				{
+					"name": "Envelope Pattern Demo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/response-patterns/envelope",
+							"host": ["{{local_api_url}}"],
+							"path": ["response-patterns", "envelope"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Direct Response Demo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/response-patterns/direct",
+							"host": ["{{local_api_url}}"],
+							"path": ["response-patterns", "direct"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🧪 Status Code Testing",
+			"item": [
+				{
+					"name": "404 - Task Not Found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/tasks/nonexistent",
+							"host": ["{{local_api_url}}"],
+							"path": ["tasks", "nonexistent"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "400 - Bad Request (Demo)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/error/400",
+							"host": ["{{local_api_url}}"],
+							"path": ["error", "400"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404 - Not Found (Demo)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/error/404",
+							"host": ["{{local_api_url}}"],
+							"path": ["error", "404"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "500 - Server Error (Demo)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local_api_url}}/error/500",
+							"host": ["{{local_api_url}}"],
+							"path": ["error", "500"]
+						}
+					},
+					"response": []
 				}
 			]
 		}
 	],
 	"variable": [
 		{
-			"key": "taskflow_base_url",
-			"value": "https://api.taskflow-demo.com",
+			"key": "local_api_url",
+			"value": "http://localhost:8001",
 			"type": "string"
 		},
 		{

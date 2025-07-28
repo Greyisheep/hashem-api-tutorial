@@ -1,6 +1,19 @@
 # API Treasure Hunt - 10 Minutes
 
-## Your Mission: Explore these 5 APIs and document findings
+## Your Mission: Explore these 6 APIs and document findings
+
+### API 0: Our Local TaskFlow API (Baseline)
+- **Base URL**: `http://localhost:8001`
+- **Try**: `GET /health`, `GET /tasks`, `GET /user-stories`, `GET /response-patterns/envelope`
+- **Find**: How does our API compare to production APIs? Notice the envelope pattern and user stories integration.
+
+**Your Notes:**
+```
+Response quality: 
+Documentation: 
+Developer experience: 
+What would you improve?:
+```
 
 ### API 1: JSONPlaceholder (Good Example)
 - **Base URL**: `https://jsonplaceholder.typicode.com`
@@ -58,7 +71,21 @@ Would you integrate? (Y/N):
 Why?:
 ```
 
-### API 5: Legacy SOAP Example (Problem Example)
+### API 5: HTTPBin (Testing Tool)
+- **Base URL**: `https://httpbin.org`
+- **Try**: `GET /get`, `POST /post`, `GET /status/404`
+- **Find**: How useful is this for API testing?
+
+**Your Notes:**
+```
+Response quality: 
+Testing capabilities: 
+Documentation: 
+Would you use for testing? (Y/N): 
+Why?:
+```
+
+### API 6: Legacy SOAP Example (Problem Example)
 - **URL**: `http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso`
 - **Find**: What makes this difficult to work with?
 

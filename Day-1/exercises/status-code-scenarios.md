@@ -2,6 +2,21 @@
 
 ## Instructions: Choose the correct status code + explain why
 
+### Pre-Exercise: Test Our API
+```bash
+# Start the API
+cd taskflow-api
+docker-compose up --build
+
+# Test error scenarios with envelope pattern
+curl http://localhost:8001/error/400
+curl http://localhost:8001/error/404
+curl http://localhost:8001/error/500
+curl http://localhost:8001/tasks/nonexistent
+```
+
+**Notice**: Our API uses the envelope pattern for consistent error responses with standardized structure.
+
 ### Scenario 1: Create Task
 **Request:** `POST /projects/123/tasks`
 **Situation:** Project 123 doesn't exist
