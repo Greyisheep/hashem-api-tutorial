@@ -1,0 +1,316 @@
+// TaskFlow Database Design
+// Use this code at dbdiagram.io to visualize the database schema
+
+Project TaskFlowAPI {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # TaskFlow API Database Schema
+    
+    This schema implements Domain-Driven Design principles with:
+    - Rich domain models
+    - Proper relationships
+    - Audit fields
+    - Performance indexes
+    
+    Domains:
+    - Users: User management and authentication
+    - Projects: Project lifecycle and membership
+    - Tasks: Task management and assignment
+    - Comments: Task discussions and feedback
+    - Notifications: System notifications
+  '''
+}
+
+// Users Domain
+Table users {
+  id varchar(36) [pk, note: 'GUID as primary key']
+  email varchar(255) [unique, not null, note: 'User email (unique)']
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  password_hash varchar(500) [not null, note: 'BCrypt hashed password']
+  role varchar(50) [not null, note: 'Admin, ProjectManager, Developer, Viewer']
+  status varchar(50) [not null, note: 'Active, Inactive, Suspended']
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  last_login_at timestamptz [null]
+  
+  indexes {
+    email [unique]
+    role
+    status
+    created_at
+  }
+  
+  Note: 'User management with authentication and role-based access'
+}
+
+// Projects Domain
+Table projects {
+  id varchar(36) [pk]
+  name varchar(200) [not null]
+  description text [not null]
+  status varchar(50) [not null, note: 'Planning, Active, Completed, Cancelled']
+  owner_id varchar(36) [not null, ref: > users.id]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  start_date timestamptz [null]
+  end_date timestamptz [null]
+  
+  indexes {
+    owner_id
+    status
+    created_at
+    (start_date, end_date)
+  }
+  
+  Note: 'Project management with lifecycle tracking'
+}
+
+// Project Members (Many-to-Many)
+Table project_members {
+  project_id varchar(36) [ref: > projects.id]
+  user_id varchar(36) [ref: > users.id]
+  added_at timestamptz [not null, default: `now()`]
+  added_by varchar(36) [not null, ref: > users.id]
+  
+  indexes {
+    (project_id, user_id) [pk]
+    user_id
+    added_at
+  }
+  
+  Note: 'Project membership tracking'
+}
+
+// Tasks Domain
+Table tasks {
+  id varchar(36) [pk]
+  title varchar(200) [not null]
+  description text [not null]
+  status varchar(50) [not null, note: 'pending, in_progress, completed, cancelled']
+  priority varchar(50) [not null, default: 'medium', note: 'low, medium, high, urgent']
+  assignee_id varchar(36) [null, ref: > users.id]
+  project_id varchar(36) [not null, ref: > projects.id]
+  created_by varchar(36) [not null, ref: > users.id]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  due_date timestamptz [null]
+  completed_at timestamptz [null]
+  
+  indexes {
+    project_id
+    assignee_id
+    created_by
+    status
+    priority
+    created_at
+    due_date
+    (project_id, status)
+    (assignee_id, status)
+  }
+  
+  Note: 'Task management with assignment and tracking'
+}
+
+// Comments Domain
+Table comments {
+  id varchar(36) [pk]
+  content text [not null]
+  task_id varchar(36) [not null, ref: > tasks.id]
+  author_id varchar(36) [not null, ref: > users.id]
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+  is_edited boolean [not null, default: false]
+  
+  indexes {
+    task_id
+    author_id
+    created_at
+    (task_id, created_at)
+  }
+  
+  Note: 'Task comments and discussions'
+}
+
+// Notifications Domain
+Table notifications {
+  id varchar(36) [pk]
+  type varchar(100) [not null, note: 'task_assigned, task_completed, project_updated, etc.']
+  title varchar(200) [not null]
+  message text [not null]
+  recipient_id varchar(36) [not null, ref: > users.id]
+  related_entity_id varchar(36) [null, note: 'ID of related task, project, etc.']
+  related_entity_type varchar(50) [null, note: 'task, project, user, etc.']
+  is_read boolean [not null, default: false]
+  created_at timestamptz [not null, default: `now()`]
+  read_at timestamptz [null]
+  
+  indexes {
+    recipient_id
+    type
+    is_read
+    created_at
+    (recipient_id, is_read)
+    (recipient_id, created_at)
+    (related_entity_type, related_entity_id)
+  }
+  
+  Note: 'System notifications for users'
+}
+
+// Audit Log for Compliance
+Table audit_logs {
+  id varchar(36) [pk]
+  entity_type varchar(100) [not null, note: 'user, project, task, etc.']
+  entity_id varchar(36) [not null]
+  action varchar(100) [not null, note: 'created, updated, deleted, etc.']
+  old_values jsonb [null, note: 'Previous state (for updates)']
+  new_values jsonb [null, note: 'New state']
+  performed_by varchar(36) [not null, ref: > users.id]
+  performed_at timestamptz [not null, default: `now()`]
+  ip_address inet [null]
+  user_agent text [null]
+  
+  indexes {
+    entity_type
+    entity_id
+    action
+    performed_by
+    performed_at
+    (entity_type, entity_id)
+    (performed_by, performed_at)
+  }
+  
+  Note: 'Comprehensive audit trail for compliance'
+}
+
+// User Sessions for JWT Management
+Table user_sessions {
+  id varchar(36) [pk]
+  user_id varchar(36) [not null, ref: > users.id]
+  refresh_token varchar(500) [not null, unique]
+  expires_at timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
+  ip_address inet [null]
+  user_agent text [null]
+  is_revoked boolean [not null, default: false]
+  revoked_at timestamptz [null]
+  
+  indexes {
+    user_id
+    refresh_token [unique]
+    expires_at
+    is_revoked
+    (user_id, is_revoked)
+  }
+  
+  Note: 'JWT refresh token management'
+}
+
+// API Keys for External Integrations
+Table api_keys {
+  id varchar(36) [pk]
+  name varchar(100) [not null, note: 'Human-readable name']
+  key_hash varchar(500) [not null, unique, note: 'Hashed API key']
+  user_id varchar(36) [not null, ref: > users.id]
+  scopes text[] [not null, note: 'Array of permissions']
+  is_active boolean [not null, default: true]
+  expires_at timestamptz [null]
+  created_at timestamptz [not null, default: `now()`]
+  last_used_at timestamptz [null]
+  usage_count integer [not null, default: 0]
+  
+  indexes {
+    user_id
+    key_hash [unique]
+    is_active
+    expires_at
+    (user_id, is_active)
+  }
+  
+  Note: 'API key management for external integrations'
+}
+
+// Performance and Analytics
+Table request_logs {
+  id varchar(36) [pk]
+  endpoint varchar(200) [not null]
+  method varchar(10) [not null]
+  status_code integer [not null]
+  response_time_ms integer [not null]
+  user_id varchar(36) [null, ref: > users.id]
+  ip_address inet [not null]
+  user_agent text [null]
+  request_size_bytes integer [null]
+  response_size_bytes integer [null]
+  created_at timestamptz [not null, default: `now()`]
+  
+  indexes {
+    endpoint
+    method
+    status_code
+    user_id
+    created_at
+    response_time_ms
+    (endpoint, method)
+    (created_at, response_time_ms)
+  }
+  
+  Note: 'API performance and usage analytics'
+}
+
+// Business Intelligence Views
+// These would be implemented as PostgreSQL views
+
+Note business_metrics '''
+# Key Business Metrics Views
+
+## Project Performance
+- Average project completion time
+- Project success rate by owner
+- Task completion velocity
+
+## User Productivity
+- Tasks completed per user per day/week/month
+- Average task completion time by user
+- User engagement metrics
+
+## System Health
+- API response time percentiles
+- Error rate by endpoint
+- Peak usage patterns
+
+## Security Metrics
+- Failed login attempts
+- Suspicious activity patterns
+- API key usage monitoring
+'''
+
+// Database Constraints and Rules
+Note database_rules '''
+# Database Constraints and Business Rules
+
+## Data Integrity
+- All timestamps in UTC
+- Soft deletes using status fields
+- Audit trail for all critical operations
+- Foreign key constraints enforced
+
+## Performance Optimizations
+- Composite indexes for common query patterns
+- Partial indexes for filtered queries
+- JSONB for flexible metadata storage
+- Connection pooling configured
+
+## Security Measures
+- Row-level security (RLS) enabled
+- Encrypted sensitive data at rest
+- API rate limiting at database level
+- Regular security audits scheduled
+
+## Backup and Recovery
+- Daily automated backups
+- Point-in-time recovery enabled
+- Cross-region backup replication
+- Disaster recovery procedures documented
+''' 
