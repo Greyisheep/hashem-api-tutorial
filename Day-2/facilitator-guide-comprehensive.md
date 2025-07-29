@@ -37,8 +37,28 @@ By 4:00 PM, students should be able to:
 - **Your Role**: Ask probing questions, highlight good patterns
 - **Key Questions**:
   - "How did you handle cross-domain operations?"
+    <details><summary>**Answer**: Look for domain events, saga patterns, or orchestration services</summary>
+    - Domain events for loose coupling between domains
+    - Saga pattern for distributed transactions
+    - Orchestration services to coordinate cross-domain operations
+    - Event sourcing for audit trails
+    </details>
   - "What error scenarios did you consider?"
+    <details><summary>**Answer**: Network failures, validation errors, business rule violations</summary>
+    - Network timeouts and retries
+    - Input validation (400 errors)
+    - Business rule violations (422 errors)
+    - Authentication/authorization failures (401/403)
+    - Server errors (500) with proper logging
+    </details>
   - "How would this scale to 1000+ users?"
+    <details><summary>**Answer**: Caching, database optimization, horizontal scaling</summary>
+    - Redis caching for frequently accessed data
+    - Database indexing and query optimization
+    - Horizontal scaling with load balancers
+    - Microservices architecture for independent scaling
+    - CDN for static content
+    </details>
 
 ### 10:30-10:45 AM: Break (15 min)
 **Your prep time**: Set up TaskFlow API demo environment
@@ -60,8 +80,29 @@ By 4:00 PM, students should be able to:
 
 **Key Questions**:
 - "Why is Email a value object, not a string?"
+  <details><summary>**Answer**: Encapsulation, validation, and domain logic</summary>
+  - Email validation logic is encapsulated within the value object
+  - Prevents invalid email states throughout the application
+  - Domain rules (like email format) are enforced at the domain level
+  - Makes the code more expressive and self-documenting
+  - Easier to change email validation rules in one place
+  </details>
 - "What happens if we try to change a task's status?"
+  <details><summary>**Answer**: Domain events and business rules are triggered</summary>
+  - TaskStatusChangedEvent is raised and published
+  - Business rules validate the status transition (e.g., can't move from "Completed" to "In Progress")
+  - Event handlers can trigger notifications, audit logs, or other side effects
+  - Repository pattern ensures data consistency
+  - Domain invariants are maintained
+  </details>
 - "How does the repository pattern help us?"
+  <details><summary>**Answer**: Abstraction, testability, and domain focus</summary>
+  - Abstracts data access details from domain logic
+  - Makes unit testing easier with mock repositories
+  - Domain entities focus on business rules, not data access
+  - Can easily switch between different data stores (SQL, NoSQL, etc.)
+  - Centralizes data access logic and query optimization
+  </details>
 
 #### Project Structure Deep Dive (15 min)
 **Show**: Complete project organization
@@ -96,8 +137,31 @@ By 4:00 PM, students should be able to:
 - **Focus**: Performance, normalization, relationships
 - **Key Questions**:
   - "How would this handle 10,000 tasks?"
+    <details><summary>**Answer**: Pagination, indexing, and query optimization</summary>
+    - Implement pagination (limit/offset or cursor-based)
+    - Add indexes on frequently queried columns (user_id, project_id, status, created_at)
+    - Use database partitioning for large tables
+    - Implement caching for frequently accessed data
+    - Consider read replicas for heavy read workloads
+    </details>
   - "What indexes would you add?"
+    <details><summary>**Answer**: Composite indexes based on query patterns</summary>
+    - Primary key indexes (automatic)
+    - Foreign key indexes (user_id, project_id)
+    - Composite indexes: (user_id, status), (project_id, created_at)
+    - Unique indexes: email, username
+    - Partial indexes: WHERE status = 'active'
+    - Consider covering indexes for frequently accessed queries
+    </details>
   - "How do you handle soft deletes?"
+    <details><summary>**Answer**: Deleted_at column and query filtering</summary>
+    - Add `deleted_at` timestamp column (nullable)
+    - Set `deleted_at = NOW()` instead of actually deleting
+    - Filter queries with `WHERE deleted_at IS NULL`
+    - Create database views for "active" records
+    - Consider archive tables for very old deleted records
+    - Implement hard delete for GDPR compliance when needed
+    </details>
 
 ### 1:00-2:00 PM: Lunch (60 min)
 **Your prep time**: Set up authentication demo environment
@@ -109,6 +173,25 @@ By 4:00 PM, students should be able to:
 - **Show**: OAuth 2.0 flow diagrams
 - **Compare**: JWT vs Session tokens
 - **Key insight**: "Choose based on your use case"
+- **Key Questions**:
+  - "When would you use JWT vs Session tokens?"
+    <details><summary>**Answer**: JWT for stateless APIs, Sessions for stateful apps</summary>
+    - JWT: Stateless, good for microservices, mobile apps, single-page apps
+    - Sessions: Stateful, better for traditional web apps, easier to revoke
+    - JWT: Larger payload but no server storage needed
+    - Sessions: Smaller payload but requires server-side storage
+    - JWT: Harder to revoke (need blacklisting or short expiration)
+    - Sessions: Easy to revoke by deleting server-side session
+    </details>
+  - "What's the difference between authentication and authorization?"
+    <details><summary>**Answer**: Authentication = who you are, Authorization = what you can do</summary>
+    - Authentication: Verifies identity (login, password, biometrics)
+    - Authorization: Determines permissions (roles, claims, policies)
+    - Authentication happens first, then authorization
+    - JWT tokens can contain both identity and permission claims
+    - Role-based access control (RBAC) is an authorization pattern
+    - Claims-based authorization is more flexible than roles
+    </details>
 
 #### OAuth 2.0 Implementation (30 min)
 **Demo**: Complete OAuth 2.0 flow
@@ -127,6 +210,26 @@ By 4:00 PM, students should be able to:
 - **Show**: API key implementation
 - **Demonstrate**: Rate limiting with API keys
 - **Key insight**: "API keys for machine-to-machine, OAuth for user access"
+- **Key Questions**:
+  - "When should you use API keys vs OAuth 2.0?"
+    <details><summary>**Answer**: API keys for M2M, OAuth for user access</summary>
+    - API Keys: Machine-to-machine communication, server-to-server APIs
+    - OAuth 2.0: User authentication, third-party app access
+    - API Keys: Simpler, faster, but less secure
+    - OAuth 2.0: More secure, supports user consent, refresh tokens
+    - API Keys: Good for internal services, webhooks, background jobs
+    - OAuth 2.0: Good for user-facing applications, mobile apps
+    </details>
+  - "How do you secure API keys?"
+    <details><summary>**Answer**: Environment variables, rotation, and scoping</summary>
+    - Store in environment variables, never in code
+    - Use key rotation (change keys periodically)
+    - Scope keys to specific permissions/endpoints
+    - Use HTTPS for all API key transmission
+    - Monitor for unusual usage patterns
+    - Implement rate limiting per API key
+    - Use different keys for different environments (dev/staging/prod)
+    </details>
 
 ### 3:30-3:45 PM: Break (15 min)
 **Your prep time**: Prepare final implementation session
@@ -237,6 +340,45 @@ By 4:00 PM, students should be able to:
 **Database issues**: Reset with `docker-compose down -v`
 **API issues**: Check logs with `docker-compose logs taskflow-api`
 **dbdiagram.io issues**: Use backup browser or mobile app
+
+### Common C#/.NET Questions & Answers:
+- **"What's the difference between `var` and explicit types?"**
+  <details><summary>**Answer**: `var` for type inference, explicit for clarity</summary>
+  - `var` lets the compiler infer the type from the right side
+  - Use `var` when the type is obvious from context
+  - Use explicit types when it adds clarity or for primitive types
+  - `var` is compile-time only, doesn't affect runtime performance
+  - Example: `var tasks = await _repository.GetAllAsync();` vs `List<Task> tasks = ...`
+  </details>
+
+- **"What's the difference between `async/await` and `Task.Run`?"**
+  <details><summary>**Answer**: `async/await` for I/O, `Task.Run` for CPU-bound work</summary>
+  - `async/await`: For I/O operations (database, HTTP, file operations)
+  - `Task.Run`: For CPU-intensive work that should run on background thread
+  - `async/await` doesn't create new threads, just frees up the current thread
+  - `Task.Run` creates a new thread from the thread pool
+  - Example: `await _dbContext.SaveChangesAsync()` vs `Task.Run(() => HeavyCalculation())`
+  </details>
+
+- **"What's dependency injection and why use it?"**
+  <details><summary>**Answer**: Loose coupling, testability, and lifecycle management</summary>
+  - DI provides objects with their dependencies instead of creating them
+  - Makes code more testable (can inject mocks)
+  - Manages object lifecycles (singleton, scoped, transient)
+  - Reduces coupling between classes
+  - Built into ASP.NET Core with `IServiceCollection`
+  - Example: Constructor injection `public TaskController(ITaskRepository repository)`
+  </details>
+
+- **"What's the difference between `IEnumerable`, `IQueryable`, and `List`?"**
+  <details><summary>**Answer**: Different levels of data access and execution</summary>
+  - `IEnumerable`: In-memory collection, executes immediately
+  - `IQueryable`: Database query builder, executes when enumerated
+  - `List`: Concrete implementation, in-memory with random access
+  - `IQueryable` is more efficient for database queries (filters at DB level)
+  - `IEnumerable` is better for in-memory operations
+  - Example: `IQueryable<Task>` for EF Core queries, `List<Task>` for results
+  </details>
 
 ### Backup Plans:
 **Demo failures**: Use pre-recorded videos
