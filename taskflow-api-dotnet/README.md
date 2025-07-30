@@ -26,6 +26,45 @@ cd taskflow-api-dotnet
 ./start-frontend.sh
 ```
 
+## 🔧 OAuth Setup
+
+### Quick Setup (Recommended)
+Use our automated setup scripts to configure Google OAuth:
+
+**Linux/macOS:**
+```bash
+./setup-oauth.sh
+```
+
+**Windows:**
+```cmd
+setup-oauth.bat
+```
+
+### Manual Setup
+1. Copy the environment template:
+   ```bash
+   cp env.example .env
+   ```
+
+2. Configure Google OAuth in [Google Cloud Console](https://console.cloud.google.com/):
+   - **Authorized JavaScript origins:**
+     - `http://localhost:3000`
+     - `https://localhost:3000`
+     - `http://localhost:7001`
+     - `https://localhost:7001`
+   - **Authorized redirect URIs:**
+     - `http://localhost:7001/api/auth/google-callback`
+     - `https://localhost:7001/api/auth/google-callback`
+
+3. Update your `.env` file with your Google OAuth credentials:
+   ```bash
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   ```
+
+📚 **Detailed Setup Guide**: See [GOOGLE-OAUTH-SETUP.md](GOOGLE-OAUTH-SETUP.md) for comprehensive instructions.
+
 ## 🛡️ Security Features
 
 ### ✅ OAuth 2.0 with Google
