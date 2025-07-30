@@ -17,26 +17,35 @@ public class TaskConfiguration : IEntityTypeConfiguration<TaskFlow.Domain.Entiti
         // Following DDD: Configure aggregate root
         builder.HasKey(t => t.Id);
 
-        // Configure value objects as owned entities
-        builder.OwnsOne(t => t.Id, taskId =>
-        {
-            taskId.Property(id => id.Value).HasColumnName("Id");
-        });
+        // Configure value objects with conversions
+        builder.Property(t => t.Id)
+            .HasConversion(
+                id => id.Value,
+                value => TaskId.From(value))
+            .HasColumnName("Id")
+            .IsRequired();
 
-        builder.OwnsOne(t => t.Title, title =>
-        {
-            title.Property(t => t.Value).HasColumnName("Title").HasMaxLength(200);
-        });
+        builder.Property(t => t.Title)
+            .HasConversion(
+                title => title.Value,
+                value => TaskTitle.From(value))
+            .HasColumnName("Title")
+            .HasMaxLength(200)
+            .IsRequired();
 
-        builder.OwnsOne(t => t.Status, status =>
-        {
-            status.Property(s => s.Value).HasColumnName("Status");
-        });
+        builder.Property(t => t.Status)
+            .HasConversion(
+                status => status.Value,
+                value => TaskState.From(value))
+            .HasColumnName("Status")
+            .IsRequired();
 
-        builder.OwnsOne(t => t.ProjectId, projectId =>
-        {
-            projectId.Property(id => id.Value).HasColumnName("ProjectId");
-        });
+        builder.Property(t => t.ProjectId)
+            .HasConversion(
+                projectId => projectId.Value,
+                value => ProjectId.From(value))
+            .HasColumnName("ProjectId")
+            .IsRequired();
 
         // Configure regular properties
         builder.Property(t => t.Description).IsRequired();
@@ -48,13 +57,13 @@ public class TaskConfiguration : IEntityTypeConfiguration<TaskFlow.Domain.Entiti
         // Configure relationships
         builder.HasOne<Project>()
             .WithMany()
-            .HasForeignKey(t => t.ProjectId.Value)
+            .HasForeignKey(t => t.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Configure indexes
-        builder.HasIndex(t => t.ProjectId.Value);
+        builder.HasIndex(t => t.ProjectId);
         builder.HasIndex(t => t.AssigneeId);
-        builder.HasIndex(t => t.Status.Value);
+        builder.HasIndex(t => t.Status);
         builder.HasIndex(t => t.CreatedBy);
         builder.HasIndex(t => t.CreatedAt);
 

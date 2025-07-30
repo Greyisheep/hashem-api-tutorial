@@ -16,26 +16,34 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         // Following DDD: Configure aggregate root
         builder.HasKey(u => u.Id);
         
-        // Configure value objects as owned entities
-        builder.OwnsOne(u => u.Id, userId =>
-        {
-            userId.Property(id => id.Value).HasColumnName("Id");
-        });
+        // Configure value objects with conversions
+        builder.Property(u => u.Id)
+            .HasConversion(
+                id => id.Value,
+                value => UserId.From(value))
+            .HasColumnName("Id")
+            .IsRequired();
 
-        builder.OwnsOne(u => u.Email, email =>
-        {
-            email.Property(e => e.Value).HasColumnName("Email");
-        });
+        builder.Property(u => u.Email)
+            .HasConversion(
+                email => email.Value,
+                value => Email.From(value))
+            .HasColumnName("Email")
+            .IsRequired();
 
-        builder.OwnsOne(u => u.Role, role =>
-        {
-            role.Property(r => r.Value).HasColumnName("Role");
-        });
+        builder.Property(u => u.Role)
+            .HasConversion(
+                role => role.Value,
+                value => UserRole.From(value))
+            .HasColumnName("Role")
+            .IsRequired();
 
-        builder.OwnsOne(u => u.Status, status =>
-        {
-            status.Property(s => s.Value).HasColumnName("Status");
-        });
+        builder.Property(u => u.Status)
+            .HasConversion(
+                status => status.Value,
+                value => UserStatus.From(value))
+            .HasColumnName("Status")
+            .IsRequired();
 
         // Configure regular properties
         builder.Property(u => u.FirstName).IsRequired().HasMaxLength(100);
@@ -46,9 +54,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.LastLoginAt).IsRequired(false);
 
         // Configure indexes
-        builder.HasIndex(u => u.Email.Value).IsUnique();
-        builder.HasIndex(u => u.Role.Value);
-        builder.HasIndex(u => u.Status.Value);
+        builder.HasIndex(u => u.Email).IsUnique();
+        builder.HasIndex(u => u.Role);
+        builder.HasIndex(u => u.Status);
 
         // Configure table name
         builder.ToTable("Users");

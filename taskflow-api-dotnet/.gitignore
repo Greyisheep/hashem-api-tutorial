@@ -1,0 +1,52 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+*.log
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# Secrets and configuration
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+secrets.json
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# IDE
+.vs/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Build outputs
+dist/
+build/
+publish/
+
+# Temporary files
+tmp/
+temp/ 

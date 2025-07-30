@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow API Security Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .api-response {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .user-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .rate-limit-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 TaskFlow API Security Demo</h1>
+            <p>Testing OAuth 2.0, Rate Limiting, and Security Features</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="section">
+            <h2>🔑 Authentication</h2>
+            <div id="auth-status" class="status info">
+                Not authenticated
+            </div>
+            <button id="google-login" class="btn">Login with Google</button>
+            <button id="logout" class="btn btn-danger hidden">Logout</button>
+            <button id="get-user" class="btn btn-success hidden">Get Current User</button>
+        </div>
+
+        <!-- User Info Section -->
+        <div id="user-section" class="section hidden">
+            <h2>👤 User Information</h2>
+            <div id="user-info" class="user-info">
+                Loading user information...
+            </div>
+        </div>
+
+        <!-- API Testing Section -->
+        <div class="section">
+            <h2>🧪 API Testing</h2>
+            <div class="rate-limit-info">
+                <strong>Rate Limiting Test:</strong> Click the buttons below to test rate limiting. 
+                You should see rate limit headers in the response.
+            </div>
+            <button id="test-health" class="btn">Test Health Endpoint</button>
+            <button id="test-tasks" class="btn">Test Tasks Endpoint</button>
+            <button id="test-rate-limit" class="btn btn-danger">Test Rate Limiting (Spam)</button>
+            <div id="api-response" class="api-response hidden"></div>
+        </div>
+
+        <!-- Security Headers Section -->
+        <div class="section">
+            <h2>🛡️ Security Headers</h2>
+            <button id="check-headers" class="btn">Check Security Headers</button>
+            <div id="headers-response" class="api-response hidden"></div>
+        </div>
+
+        <!-- OAuth Flow Section -->
+        <div class="section">
+            <h2>🔄 OAuth 2.0 Flow</h2>
+            <p>This demo shows the complete OAuth 2.0 flow with Google:</p>
+            <ol>
+                <li>Click "Login with Google" to start the OAuth flow</li>
+                <li>You'll be redirected to Google for authentication</li>
+                <li>After successful authentication, you'll get a JWT token</li>
+                <li>Use the token to access protected API endpoints</li>
+            </ol>
+            <div id="oauth-status" class="status info">
+                Ready to start OAuth flow
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:7001';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+
+        // Update UI based on authentication status
+        function updateAuthStatus() {
+            const authStatus = document.getElementById('auth-status');
+            const googleLoginBtn = document.getElementById('google-login');
+            const logoutBtn = document.getElementById('logout');
+            const getUserBtn = document.getElementById('get-user');
+            const userSection = document.getElementById('user-section');
+
+            if (authToken) {
+                authStatus.textContent = '✅ Authenticated';
+                authStatus.className = 'status success';
+                googleLoginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                getUserBtn.classList.remove('hidden');
+                userSection.classList.remove('hidden');
+            } else {
+                authStatus.textContent = '❌ Not authenticated';
+                authStatus.className = 'status error';
+                googleLoginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                getUserBtn.classList.add('hidden');
+                userSection.classList.add('hidden');
+            }
+        }
+
+        // Initialize the page
+        updateAuthStatus();
+
+        // Google OAuth Login
+        document.getElementById('google-login').addEventListener('click', () => {
+            const oauthStatus = document.getElementById('oauth-status');
+            oauthStatus.textContent = '🔄 Redirecting to Google...';
+            oauthStatus.className = 'status info';
+            
+            // Redirect to Google OAuth
+            window.location.href = `${API_BASE_URL}/api/auth/google-login?returnUrl=${encodeURIComponent(window.location.href)}`;
+        });
+
+        // Logout
+        document.getElementById('logout').addEventListener('click', () => {
+            localStorage.removeItem('authToken');
+            authToken = null;
+            currentUser = null;
+            updateAuthStatus();
+            
+            const oauthStatus = document.getElementById('oauth-status');
+            oauthStatus.textContent = '✅ Logged out successfully';
+            oauthStatus.className = 'status success';
+        });
+
+        // Get current user
+        document.getElementById('get-user').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    currentUser = user;
+                    displayUserInfo(user);
+                } else {
+                    throw new Error('Failed to get user info');
+                }
+            } catch (error) {
+                console.error('Error getting user info:', error);
+                document.getElementById('user-info').innerHTML = '❌ Error getting user information';
+            }
+        });
+
+        // Display user information
+        function displayUserInfo(user) {
+            const userInfo = document.getElementById('user-info');
+            userInfo.innerHTML = `
+                <strong>User ID:</strong> ${user.id}<br>
+                <strong>Email:</strong> ${user.email}<br>
+                <strong>Name:</strong> ${user.firstName} ${user.lastName}<br>
+                <strong>Profile Picture:</strong> ${user.profilePictureUrl || 'None'}<br>
+                <strong>Created:</strong> ${new Date(user.createdAt).toLocaleString()}<br>
+                <strong>Last Login:</strong> ${new Date(user.lastLoginAt).toLocaleString()}
+            `;
+        }
+
+        // Test Health Endpoint
+        document.getElementById('test-health').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const data = await response.json();
+                
+                const responseDiv = document.getElementById('api-response');
+                responseDiv.classList.remove('hidden');
+                responseDiv.textContent = `Status: ${response.status}\nHeaders: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}\nResponse: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                console.error('Error testing health endpoint:', error);
+            }
+        });
+
+        // Test Tasks Endpoint
+        document.getElementById('test-tasks').addEventListener('click', async () => {
+            try {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/tasks`, {
+                    headers: headers
+                });
+                
+                const data = await response.json();
+                
+                const responseDiv = document.getElementById('api-response');
+                responseDiv.classList.remove('hidden');
+                responseDiv.textContent = `Status: ${response.status}\nHeaders: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}\nResponse: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                console.error('Error testing tasks endpoint:', error);
+            }
+        });
+
+        // Test Rate Limiting
+        document.getElementById('test-rate-limit').addEventListener('click', async () => {
+            const responseDiv = document.getElementById('api-response');
+            responseDiv.classList.remove('hidden');
+            responseDiv.textContent = 'Testing rate limiting...\n\n';
+            
+            for (let i = 1; i <= 10; i++) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/tasks`);
+                    const headers = Object.fromEntries(response.headers.entries());
+                    
+                    responseDiv.textContent += `Request ${i}:\n`;
+                    responseDiv.textContent += `Status: ${response.status}\n`;
+                    responseDiv.textContent += `X-RateLimit-Limit: ${headers['x-ratelimit-limit'] || 'N/A'}\n`;
+                    responseDiv.textContent += `X-RateLimit-Remaining: ${headers['x-ratelimit-remaining'] || 'N/A'}\n`;
+                    responseDiv.textContent += `X-RateLimit-Reset: ${headers['x-ratelimit-reset'] || 'N/A'}\n`;
+                    responseDiv.textContent += `---\n`;
+                    
+                    if (response.status === 429) {
+                        responseDiv.textContent += '✅ Rate limit hit! This is expected behavior.\n';
+                        break;
+                    }
+                } catch (error) {
+                    responseDiv.textContent += `Request ${i}: Error - ${error.message}\n`;
+                }
+            }
+        });
+
+        // Check Security Headers
+        document.getElementById('check-headers').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const headers = Object.fromEntries(response.headers.entries());
+                
+                const securityHeaders = {
+                    'Strict-Transport-Security': headers['strict-transport-security'],
+                    'X-Frame-Options': headers['x-frame-options'],
+                    'X-Content-Type-Options': headers['x-content-type-options'],
+                    'X-XSS-Protection': headers['x-xss-protection'],
+                    'Referrer-Policy': headers['referrer-policy'],
+                    'Content-Security-Policy': headers['content-security-policy'],
+                    'Permissions-Policy': headers['permissions-policy']
+                };
+                
+                const headersDiv = document.getElementById('headers-response');
+                headersDiv.classList.remove('hidden');
+                headersDiv.textContent = `Security Headers Check:\n\n${JSON.stringify(securityHeaders, null, 2)}`;
+            } catch (error) {
+                console.error('Error checking security headers:', error);
+            }
+        });
+
+        // Handle OAuth callback
+        function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const error = urlParams.get('error');
+            
+            if (token) {
+                authToken = token;
+                localStorage.setItem('authToken', token);
+                updateAuthStatus();
+                
+                const oauthStatus = document.getElementById('oauth-status');
+                oauthStatus.textContent = '✅ OAuth authentication successful!';
+                oauthStatus.className = 'status success';
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (error) {
+                const oauthStatus = document.getElementById('oauth-status');
+                let errorMessage = '❌ OAuth authentication failed';
+                
+                switch (error) {
+                    case 'oauth_failure':
+                        errorMessage = '❌ OAuth authentication failed - please try again';
+                        break;
+                    case 'user_creation_failed':
+                        errorMessage = '❌ Failed to create user account';
+                        break;
+                    case 'login_association_failed':
+                        errorMessage = '❌ Failed to associate login with account';
+                        break;
+                    default:
+                        errorMessage = `❌ OAuth error: ${error}`;
+                }
+                
+                oauthStatus.textContent = errorMessage;
+                oauthStatus.className = 'status error';
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Check for OAuth callback on page load
+        handleOAuthCallback();
+    </script>
+</body>
+</html> 

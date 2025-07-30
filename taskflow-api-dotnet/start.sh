@@ -23,9 +23,9 @@ echo "TaskFlow API is now running!"
 echo "========================================"
 echo
 echo "API Endpoints:"
-echo "- API: http://localhost:5000"
-echo "- Swagger UI: http://localhost:5000/swagger"
-echo "- Health Check: http://localhost:5000/health"
+echo "- API: https://localhost:7001"
+echo "- Swagger UI: https://localhost:7001/swagger"
+echo "- Health Check: https://localhost:7001/health"
 echo
 echo "Database:"
 echo "- PostgreSQL: localhost:5432"

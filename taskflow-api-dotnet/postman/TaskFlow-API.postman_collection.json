@@ -27,106 +27,55 @@
 						"description": "Check the health status of the API and its dependencies"
 					},
 					"response": []
-				},
-				{
-					"name": "API Root",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								""
-							]
-						},
-						"description": "Get API root information"
-					},
-					"response": []
 				}
 			],
 			"description": "Health check and status endpoints"
 		},
 		{
-			"name": "Authentication",
+			"name": "Authentication & Security",
 			"item": [
 				{
-					"name": "Login",
+					"name": "Google OAuth Login",
 					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": \"admin@taskflow.com\",\n  \"password\": \"admin123\"\n}"
-						},
+						"method": "GET",
+						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/auth/login",
+							"raw": "{{baseUrl}}/api/auth/google-login",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"auth",
-								"login"
+								"google-login"
 							]
 						},
-						"description": "Authenticate user and get JWT token"
+						"description": "Initiate Google OAuth 2.0 login flow"
 					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 200) {",
-									"    const response = pm.response.json();",
-									"    if (response.data && response.data.token) {",
-									"        pm.environment.set('authToken', response.data.token);",
-									"    }",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
+					"response": []
 				},
 				{
-					"name": "Refresh Token",
+					"name": "Get Current User",
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [
 							{
 								"key": "Authorization",
 								"value": "Bearer {{authToken}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
-						},
 						"url": {
-							"raw": "{{baseUrl}}/api/auth/refresh",
+							"raw": "{{baseUrl}}/api/auth/me",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"auth",
-								"refresh"
+								"me"
 							]
 						},
-						"description": "Refresh JWT token using refresh token"
+						"description": "Get current authenticated user information"
 					},
 					"response": []
 				},
@@ -151,12 +100,160 @@
 								"logout"
 							]
 						},
-						"description": "Logout and invalidate current token"
+						"description": "Logout current user"
 					},
 					"response": []
 				}
 			],
-			"description": "Authentication endpoints for JWT token management"
+			"description": "OAuth 2.0 authentication and user management endpoints"
+		},
+		{
+			"name": "Security Testing",
+			"item": [
+				{
+					"name": "Test Rate Limiting",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						},
+						"description": "Test rate limiting by making multiple requests"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check for rate limit headers",
+									"const rateLimitLimit = pm.response.headers.get('X-RateLimit-Limit');",
+									"const rateLimitRemaining = pm.response.headers.get('X-RateLimit-Remaining');",
+									"const rateLimitReset = pm.response.headers.get('X-RateLimit-Reset');",
+									"",
+									"if (rateLimitLimit) {",
+									"    console.log('Rate Limit:', rateLimitLimit);",
+									"    console.log('Remaining:', rateLimitRemaining);",
+									"    console.log('Reset:', rateLimitReset);",
+									"}",
+									"",
+									"// Check for security headers",
+									"const securityHeaders = [",
+									"    'Strict-Transport-Security',",
+									"    'X-Frame-Options',",
+									"    'X-Content-Type-Options',",
+									"    'X-XSS-Protection',",
+									"    'Content-Security-Policy',",
+									"    'Referrer-Policy'",
+									"];",
+									"",
+									"securityHeaders.forEach(header => {",
+									"    const value = pm.response.headers.get(header);",
+									"    if (value) {",
+									"        console.log(`${header}: ${value}`);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Test Security Headers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check security headers implementation"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test security headers",
+									"const requiredHeaders = {",
+									"    'X-Content-Type-Options': 'nosniff',",
+									"    'X-Frame-Options': 'DENY',",
+									"    'X-XSS-Protection': '1; mode=block',",
+									"    'Referrer-Policy': 'strict-origin-when-cross-origin'",
+									"};",
+									"",
+									"let allHeadersPresent = true;",
+									"",
+									"for (const [header, expectedValue] of Object.entries(requiredHeaders)) {",
+									"    const actualValue = pm.response.headers.get(header);",
+									"    if (actualValue !== expectedValue) {",
+									"        console.log(`❌ ${header}: expected '${expectedValue}', got '${actualValue}'`);",
+									"        allHeadersPresent = false;",
+									"    } else {",
+									"        console.log(`✅ ${header}: ${actualValue}`);",
+									"    }",
+									"}",
+									"",
+									"if (allHeadersPresent) {",
+									"    console.log('✅ All required security headers are present');",
+									"} else {",
+									"    console.log('❌ Some security headers are missing or incorrect');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Test Authentication Required",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/tasks",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						},
+						"description": "Test that protected endpoints require authentication"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Should return 401 Unauthorized",
+									"pm.test('Should require authentication', function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			],
+			"description": "Security testing endpoints for rate limiting, headers, and authentication"
 		},
 		{
 			"name": "Tasks",
@@ -181,7 +278,7 @@
 								"tasks"
 							]
 						},
-						"description": "Retrieve all tasks in the system"
+						"description": "Get all tasks for the authenticated user"
 					},
 					"response": []
 				},
@@ -206,7 +303,7 @@
 								"{{taskId}}"
 							]
 						},
-						"description": "Retrieve a specific task by its ID"
+						"description": "Get a specific task by ID"
 					},
 					"response": []
 				},
@@ -226,7 +323,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Implement user authentication\",\n  \"description\": \"Create a secure authentication system using JWT tokens\",\n  \"projectId\": \"project_001\"\n}"
+							"raw": "{\n  \"title\": \"New Task\",\n  \"description\": \"Task description\",\n  \"projectId\": \"{{projectId}}\",\n  \"assignedUserId\": \"{{userId}}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/tasks",
@@ -238,25 +335,9 @@
 								"tasks"
 							]
 						},
-						"description": "Create a new task with the specified details"
+						"description": "Create a new task"
 					},
-					"response": [],
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201) {",
-									"    const response = pm.response.json();",
-									"    if (response.data && response.data.id) {",
-									"        pm.environment.set('taskId', response.data.id);",
-									"    }",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					]
+					"response": []
 				},
 				{
 					"name": "Update Task",
@@ -274,7 +355,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Implement user authentication - Updated\",\n  \"description\": \"Create a secure authentication system using JWT tokens with additional security features\"\n}"
+							"raw": "{\n  \"title\": \"Updated Task\",\n  \"description\": \"Updated description\",\n  \"status\": \"InProgress\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/tasks/{{taskId}}",
@@ -288,74 +369,6 @@
 							]
 						},
 						"description": "Update an existing task"
-					},
-					"response": []
-				},
-				{
-					"name": "Assign Task",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"assigneeId\": \"user_001\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/tasks/{{taskId}}/assign",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"tasks",
-								"{{taskId}}",
-								"assign"
-							]
-						},
-						"description": "Assign a task to a specific user"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Task Status",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"status\": \"in_progress\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/tasks/{{taskId}}/status",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"tasks",
-								"{{taskId}}",
-								"status"
-							]
-						},
-						"description": "Update the status of a task"
 					},
 					"response": []
 				},
@@ -380,12 +393,12 @@
 								"{{taskId}}"
 							]
 						},
-						"description": "Delete a task by its ID"
+						"description": "Delete a task"
 					},
 					"response": []
 				}
 			],
-			"description": "Task management endpoints with full CRUD operations"
+			"description": "Task management endpoints with proper authorization"
 		},
 		{
 			"name": "Projects",
@@ -410,7 +423,7 @@
 								"projects"
 							]
 						},
-						"description": "Retrieve all projects in the system"
+						"description": "Get all projects for the authenticated user"
 					},
 					"response": []
 				},
@@ -435,7 +448,7 @@
 								"{{projectId}}"
 							]
 						},
-						"description": "Retrieve a specific project by its ID"
+						"description": "Get a specific project by ID"
 					},
 					"response": []
 				},
@@ -455,7 +468,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"TaskFlow API Development\",\n  \"description\": \"Building a production-ready API with .NET 8 and DDD\",\n  \"ownerId\": \"user_001\"\n}"
+							"raw": "{\n  \"name\": \"New Project\",\n  \"description\": \"Project description\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/projects",
@@ -473,175 +486,6 @@
 				}
 			],
 			"description": "Project management endpoints"
-		},
-		{
-			"name": "Users",
-			"item": [
-				{
-					"name": "Get All Users",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/users",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						},
-						"description": "Retrieve all users in the system"
-					},
-					"response": []
-				},
-				{
-					"name": "Get User by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/users/{{userId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users",
-								"{{userId}}"
-							]
-						},
-						"description": "Retrieve a specific user by their ID"
-					},
-					"response": []
-				},
-				{
-					"name": "Create User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"developer@taskflow.com\",\n  \"password\": \"SecurePassword123!\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"role\": \"Developer\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/users",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"users"
-							]
-						},
-						"description": "Create a new user account"
-					},
-					"response": []
-				}
-			],
-			"description": "User management endpoints"
-		},
-		{
-			"name": "Error Examples",
-			"item": [
-				{
-					"name": "Invalid Task ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/tasks/invalid-task-id",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"tasks",
-								"invalid-task-id"
-							]
-						},
-						"description": "Example of a 404 error when task is not found"
-					},
-					"response": []
-				},
-				{
-					"name": "Unauthorized Access",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/tasks",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"tasks"
-							]
-						},
-						"description": "Example of a 401 error when no authentication token is provided"
-					},
-					"response": []
-				},
-				{
-					"name": "Invalid Request Data",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{authToken}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"\",\n  \"description\": \"This is a test with invalid data\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/tasks",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"tasks"
-							]
-						},
-						"description": "Example of a 400 error when request data is invalid"
-					},
-					"response": []
-				}
-			],
-			"description": "Examples of various error responses from the API"
 		}
 	],
 	"event": [
@@ -667,7 +511,7 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:5000",
+			"value": "https://localhost:7001",
 			"type": "string"
 		},
 		{
@@ -677,17 +521,17 @@
 		},
 		{
 			"key": "taskId",
-			"value": "",
+			"value": "1",
 			"type": "string"
 		},
 		{
 			"key": "projectId",
-			"value": "project_001",
+			"value": "1",
 			"type": "string"
 		},
 		{
 			"key": "userId",
-			"value": "user_001",
+			"value": "1",
 			"type": "string"
 		}
 	]

@@ -1,166 +1,161 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TaskFlow.API.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using TaskFlow.Domain.Entities;
 
 namespace TaskFlow.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Produces("application/json")]
 public class AuthController : ControllerBase
 {
-    private readonly ILogger<AuthController> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(ILogger<AuthController> logger, IConfiguration configuration)
+    public AuthController(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        IConfiguration configuration,
+        ILogger<AuthController> logger)
     {
-        _logger = logger;
+        _userManager = userManager;
+        _signInManager = signInManager;
         _configuration = configuration;
+        _logger = logger;
     }
 
-    /// <summary>
-    /// Authenticate user and get JWT token
-    /// </summary>
-    /// <param name="request">Login credentials</param>
-    /// <returns>JWT token and user information</returns>
-    [HttpPost("login")]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-    public ActionResult<ApiResponse<object>> Login([FromBody] LoginRequest request)
+    [HttpGet("google-login")]
+    public IActionResult GoogleLogin(string returnUrl = "/")
     {
-        try
-        {
-            _logger.LogInformation("Login attempt for user: {Username}", request.Username);
-
-            // Simple authentication for demo purposes
-            // In production, this would validate against a database
-            if (request.Username == "admin@taskflow.com" && request.Password == "admin123")
-            {
-                var token = GenerateJwtToken(request.Username, "Admin");
-                
-                var response = new
-                {
-                    token = token,
-                    refreshToken = Guid.NewGuid().ToString(),
-                    expiresIn = 3600,
-                    user = new
-                    {
-                        username = request.Username,
-                        role = "Admin"
-                    }
-                };
-
-                _logger.LogInformation("Login successful for user: {Username}", request.Username);
-                return Ok(ApiResponse.SuccessResponse(response, "Login successful"));
-            }
-
-            _logger.LogWarning("Login failed for user: {Username}", request.Username);
-            return Unauthorized(ApiResponse.ErrorResponse("INVALID_CREDENTIALS", "Invalid username or password"));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during login for user: {Username}", request.Username);
-            return StatusCode(500, ApiResponse.ErrorResponse("LOGIN_ERROR", "An error occurred during login"));
-        }
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", returnUrl);
+        return Challenge(properties, "Google");
     }
 
-    /// <summary>
-    /// Refresh JWT token
-    /// </summary>
-    /// <param name="request">Refresh token request</param>
-    /// <returns>New JWT token</returns>
-    [HttpPost("refresh")]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-    public ActionResult<ApiResponse<object>> Refresh([FromBody] RefreshTokenRequest request)
+    [HttpGet("google-callback")]
+    public async Task<IActionResult> GoogleCallback()
     {
-        try
+        var info = await _signInManager.GetExternalLoginInfoAsync();
+        if (info == null)
         {
-            _logger.LogInformation("Token refresh requested");
+            _logger.LogWarning("External login info not found in callback");
+            return Redirect("/?error=oauth_failure");
+        }
 
-            // In production, validate the refresh token against a database
-            var token = GenerateJwtToken("admin@taskflow.com", "Admin");
-            
-            var response = new
+        var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        
+        string token;
+        if (signInResult.Succeeded)
+        {
+            var existingUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            token = GenerateJwtToken(existingUser);
+            _logger.LogInformation("User {Email} signed in successfully via Google OAuth", existingUser.Email);
+        }
+        else
+        {
+            // User doesn't exist, create new user
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
+            var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
+            var googleId = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var profilePicture = info.Principal.FindFirstValue("picture");
+
+            var newUser = new ApplicationUser
             {
-                token = token,
-                refreshToken = Guid.NewGuid().ToString(),
-                expiresIn = 3600
+                UserName = email,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                GoogleId = googleId,
+                ProfilePictureUrl = profilePicture,
+                EmailConfirmed = true
             };
 
-            return Ok(ApiResponse.SuccessResponse(response, "Token refreshed successfully"));
+            var createResult = await _userManager.CreateAsync(newUser);
+            if (!createResult.Succeeded)
+            {
+                _logger.LogError("Failed to create user {Email}: {Errors}", email, string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                return Redirect("/?error=user_creation_failed");
+            }
+
+            var addLoginResult = await _userManager.AddLoginAsync(newUser, info);
+            if (!addLoginResult.Succeeded)
+            {
+                _logger.LogError("Failed to add external login for user {Email}: {Errors}", email, string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
+                return Redirect("/?error=login_association_failed");
+            }
+
+            await _signInManager.SignInAsync(newUser, isPersistent: false);
+            token = GenerateJwtToken(newUser);
+            _logger.LogInformation("New user {Email} created and signed in successfully via Google OAuth", email);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during token refresh");
-            return StatusCode(500, ApiResponse.ErrorResponse("REFRESH_ERROR", "An error occurred during token refresh"));
-        }
+
+        // Get the return URL from the authentication properties
+        var returnUrl = info.Properties?.Items[".xsrf"] ?? "/";
+        
+        // Redirect back to frontend with token
+        return Redirect($"{returnUrl}?token={Uri.EscapeDataString(token)}");
     }
 
-    /// <summary>
-    /// Logout user
-    /// </summary>
-    /// <returns>Logout confirmation</returns>
     [HttpPost("logout")]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
-    public ActionResult<ApiResponse<object>> Logout()
+    public async Task<IActionResult> Logout()
     {
-        try
-        {
-            _logger.LogInformation("Logout requested for user: {Username}", User.Identity?.Name);
-
-            // In production, invalidate the refresh token
-            return Ok(ApiResponse.SuccessResponse(new { }, "Logout successful"));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during logout");
-            return StatusCode(500, ApiResponse.ErrorResponse("LOGOUT_ERROR", "An error occurred during logout"));
-        }
+        await _signInManager.SignOutAsync();
+        return Ok("Logged out successfully");
     }
 
-    private string GenerateJwtToken(string username, string role)
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetCurrentUser()
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
+        return Ok(new
+        {
+            user.Id,
+            user.Email,
+            user.FirstName,
+            user.LastName,
+            user.ProfilePictureUrl,
+            user.CreatedAt,
+            user.LastLoginAt
+        });
+    }
+
+    private string GenerateJwtToken(ApplicationUser user)
+    {
+        var jwtSettings = _configuration.GetSection("Authentication:Jwt");
         var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
-        var issuer = jwtSettings["Issuer"];
-        var audience = jwtSettings["Audience"];
-        var expirationMinutes = int.Parse(jwtSettings["ExpirationMinutes"]!);
+        var key = new SymmetricSecurityKey(secretKey);
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, role),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+            new Claim("sub", user.Id),
+            new Claim("email", user.Email)
         };
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
-            Issuer = issuer,
-            Audience = audience,
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256Signature)
-        };
+        var token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpirationMinutes"])),
+            signingCredentials: creds
+        );
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-
-        return tokenHandler.WriteToken(token);
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
-}
-
-public record LoginRequest
-{
-    public string Username { get; init; } = string.Empty;
-    public string Password { get; init; } = string.Empty;
-}
-
-public record RefreshTokenRequest
-{
-    public string RefreshToken { get; init; } = string.Empty;
 } 
