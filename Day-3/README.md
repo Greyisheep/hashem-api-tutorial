@@ -1,274 +1,176 @@
-# Day 3: API Security Best Practices
+# Day 3: API Monetization, Legacy Refactoring & Versioning
 
-## 🎯 Day 3 Objectives
-By 4:00 PM, students should be able to:
-- [ ] Implement OAuth 2.0 with Google authentication
-- [ ] Apply OWASP API Security Top 10 principles
-- [ ] Implement rate limiting and throttling
-- [ ] Secure secrets management and environment configuration
-- [ ] Add comprehensive security headers and middleware
-- [ ] Implement authenticated WebSocket connections
-- [ ] Design secure webhook endpoints
-- [ ] Apply security-first development practices
+## 🎯 Learning Objectives
 
-**Key Deliverable**: A production-hardened TaskFlow API with OAuth 2.0, rate limiting, security headers, and comprehensive security monitoring.
+By the end of Day 3, you will be able to:
 
----
+### Core Competencies
+- **API Monetization Strategies**: Understand and implement various revenue models for APIs
+- **Payment Gateway Integration**: Master Squad.co integration with real-world implementation
+- **Legacy Code Refactoring**: Apply industry-standard patterns to break down large codebases
+- **API Versioning**: Implement robust versioning strategies for evolving APIs
+- **Security Best Practices**: Implement rate limiting and other production-ready security measures
 
-## ⏰ Detailed Schedule & Timing
+### Technical Skills
+- Integrate payment gateways using Squad.co API
+- Refactor monolithic code using Domain-Driven Design (DDD)
+- Implement API versioning with backward compatibility
+- Apply rate limiting and security headers
+- Use Docker secrets management for production deployments
 
-### 10:00-10:30 AM: Security Knowledge Review & OWASP Discussion (30 min)
-**Activity**: "What did you learn about OWASP and OAuth 2.0 from your reading?"
-**Your Role**: Assess knowledge gaps, set security mindset
+## 📋 Day 3 Agenda
 
-#### Pre-flight Checklist:
-- [ ] All students have Google Cloud Console access (or demo accounts ready)
-- [ ] TaskFlow API running with current security baseline
-- [ ] Postman collections updated for security testing
-- [ ] OWASP ZAP or similar security testing tool ready
-- [ ] Sticky notes for security threat modeling
-- [ ] Timer visible to group
+### Morning Session (9:00 AM - 12:00 PM)
 
-#### Opening Script:
-"Yesterday we built APIs. Today we secure them. Let's start with what you learned about OWASP and OAuth 2.0. What security concerns keep you up at night?"
+#### 9:00 - 9:30 AM: Welcome & Day Overview
+- Review Day 1 & 2 achievements
+- Day 3 learning objectives
+- Squad.co integration overview
 
-### 10:30-10:45 AM: Break (15 min)
-**Your prep time**: Set up Google OAuth demo environment
+#### 9:30 - 10:30 AM: API Monetization Strategies
+- **Lecture**: Revenue models for APIs
+- **Demo**: Squad.co payment gateway integration
+- **Activity**: Monetization strategy workshop
 
-### 10:45-12:00 PM: Module 1 - OAuth 2.0 Implementation (75 min)
+#### 10:30 - 11:00 AM: Break
 
-#### OAuth 2.0 Deep Dive (20 min)
-**Materials**: [`demos/oauth2-implementation-demo.md`](./demos/oauth2-implementation-demo.md)
-- **Show**: Live OAuth 2.0 flow with Google
-- **Focus**: Authorization Code Flow with PKCE
-- **Key Learning**: Why PKCE matters for SPAs and mobile apps
+#### 11:00 - 12:00 PM: Legacy Code Refactoring
+- **Lecture**: Breaking down large codebases
+- **Demo**: Refactoring patterns and strategies
+- **Workshop**: Code decomposition exercise
 
-#### Google OAuth Setup Walkthrough (25 min)
-**Activity**: Step-by-step Google OAuth configuration
-- **Setup**: Google Cloud Console project creation
-- **Configuration**: OAuth 2.0 client setup
-- **Integration**: .NET Identity with Google provider
-- **Testing**: Complete login flow
+### Afternoon Session (1:00 PM - 5:00 PM)
 
-#### OAuth Implementation in TaskFlow (30 min)
-**Materials**: [`implementation/oauth2-setup-guide.md`](./implementation/oauth2-setup-guide.md)
-- **Code-along**: Add Google OAuth to TaskFlow API
-- **Security**: Proper token validation and refresh
-- **Testing**: Postman OAuth flow testing
+#### 1:00 - 2:30 PM: API Versioning & Backward Compatibility
+- **Lecture**: Versioning strategies and best practices
+- **Demo**: Versioning implementation in Squad.API
+- **Activity**: Versioning workshop
 
-### 12:00-1:00 PM: Lunch (60 min)
-**Your prep time**: Prepare rate limiting and security headers implementation
+#### 2:30 - 3:00 PM: Break
 
-### 1:00-2:15 PM: Module 2 - Rate Limiting & Security Headers (75 min)
+#### 3:00 - 4:00 PM: Production Security & Rate Limiting
+- **Lecture**: Security best practices for production APIs
+- **Demo**: Rate limiting implementation
+- **Workshop**: Security headers and monitoring
 
-#### Rate Limiting Fundamentals (20 min)
-**Discussion**: "Why do we need rate limiting?"
-- **Threats**: Brute force, scraping, DoS attacks
-- **Strategies**: Fixed window, sliding window, token bucket
-- **Implementation**: Middleware vs API Gateway
+#### 4:00 - 5:00 PM: Take-Home Assignment & Q&A
+- **Assignment**: Enhance Squad.API with rate limiting
+- **Review**: Day 3 key takeaways
+- **Preview**: Day 4 advanced topics
 
-#### Rate Limiting Implementation (30 min)
-**Materials**: [`implementation/rate-limiting-guide.md`](./implementation/rate-limiting-guide.md)
-- **Code-along**: Add rate limiting to TaskFlow API
-- **Configuration**: Per-user, per-IP, per-endpoint limits
-- **Monitoring**: Rate limit headers and logging
+## 🛠️ Technical Prerequisites
 
-#### Security Headers & Middleware (25 min)
-**Materials**: [`implementation/security-headers-guide.md`](./implementation/security-headers-guide.md)
-- **Implementation**: Comprehensive security headers
-- **CORS**: Proper cross-origin configuration
-- **CSP**: Content Security Policy setup
-- **Testing**: Security header validation
+### Required Software
+- Docker Desktop (latest version)
+- .NET 8 SDK
+- Postman (for API testing)
+- Git (for version control)
 
-### 2:15-2:30 PM: Break (15 min)
-**Your prep time**: Prepare WebSocket and webhook security demos
+### Squad.co Setup
+- Squad.co sandbox account
+- API keys and webhook configuration
+- Payment test environment
 
-### 2:30-3:45 PM: Module 3 - Advanced Security Patterns (75 min)
+### Development Environment
+```bash
+# Clone the repository (if not already done)
+git clone <repository-url>
+cd hashem-api-tutorial
 
-#### Authenticated WebSockets (25 min)
-**Materials**: [`demos/websocket-security-demo.md`](./demos/websocket-security-demo.md)
-- **Implementation**: JWT-based WebSocket authentication
-- **Security**: Token validation in WebSocket connections
-- **Demo**: Real-time task updates with authentication
+# Navigate to Squad.API
+cd Squad.API
 
-#### Secure Webhook Implementation (25 min)
-**Materials**: [`implementation/webhook-security-guide.md`](./implementation/webhook-security-guide.md)
-- **Security**: Webhook signature validation
-- **Implementation**: HMAC-based webhook verification
-- **Testing**: Webhook security testing
+# Set up environment variables
+cp env.example .env
+# Edit .env with your Squad.co credentials
+```
 
-#### Secrets Management (25 min)
-**Materials**: [`implementation/secrets-management-guide.md`](./implementation/secrets-management-guide.md)
-- **Azure Key Vault**: Integration with TaskFlow API
-- **Environment**: Secure configuration management
-- **Best Practices**: Never commit secrets to source code
-
-### 3:45-4:00 PM: Break (15 min)
-**Your prep time**: Prepare security testing and final exercises
-
-### 4:00-5:00 PM: Module 4 - Security Testing & OWASP Top 10 (60 min)
-
-#### OWASP API Security Top 10 Review (20 min)
-**Materials**: [`exercises/owasp-top10-workshop.md`](./exercises/owasp-top10-workshop.md)
-- **Interactive**: Students identify vulnerabilities in code
-- **Discussion**: Real-world attack scenarios
-- **Mitigation**: How to prevent each vulnerability
-
-#### Security Testing Workshop (25 min)
-**Activity**: Hands-on security testing
-- **Tools**: OWASP ZAP, Postman security testing
-- **Scenarios**: SQL injection, XSS, broken authentication
-- **Reporting**: Security vulnerability documentation
-
-#### Production Security Checklist (15 min)
-**Materials**: [`exercises/production-security-checklist.md`](./exercises/production-security-checklist.md)
-- **Review**: Comprehensive security checklist
-- **Implementation**: Apply to TaskFlow API
-- **Documentation**: Security runbook creation
-
----
-
-## 🎯 Key Learning Outcomes
-
-### OAuth 2.0 & Authentication
-- Understand OAuth 2.0 flows (Authorization Code, PKCE)
-- Implement Google OAuth in .NET applications
-- Secure token storage and refresh mechanisms
-- Handle authentication in SPAs and mobile apps
-
-### Rate Limiting & Throttling
-- Implement rate limiting strategies
-- Configure per-user and per-IP limits
-- Monitor and log rate limit violations
-- Handle rate limit responses gracefully
-
-### Security Headers & Middleware
-- Implement comprehensive security headers
-- Configure CORS properly
-- Set up Content Security Policy
-- Add security middleware to .NET applications
-
-### Advanced Security Patterns
-- Secure WebSocket connections with JWT
-- Implement webhook signature validation
-- Use Azure Key Vault for secrets management
-- Apply security-first development practices
-
-### OWASP API Security Top 10
-- Identify and prevent common API vulnerabilities
-- Implement proper authorization checks
-- Secure data exposure and input validation
-- Monitor and log security events
-
----
-
-## 🛠️ Technical Stack
-
-### Authentication & Authorization
-- **OAuth 2.0**: Google OAuth implementation
-- **JWT**: Token-based authentication
-- **.NET Identity**: User management and authentication
-- **PKCE**: Proof Key for Code Exchange for SPAs
-
-### Security Middleware
-- **Rate Limiting**: AspNetCoreRateLimit package
-- **Security Headers**: Custom middleware implementation
-- **CORS**: Proper cross-origin configuration
-- **CSP**: Content Security Policy headers
-
-### Secrets Management
-- **Azure Key Vault**: Secure secrets storage
-- **Environment Variables**: Local development security
-- **Configuration**: Secure appsettings management
-
-### Security Testing
-- **OWASP ZAP**: Automated security testing
-- **Postman**: Manual security testing
-- **Security Headers**: Validation tools
-- **JWT Debugger**: Token inspection
-
----
-
-## 📚 Resources & References
+## 📚 Key Resources
 
 ### Documentation
-- [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
-- [OAuth 2.0 RFC 6749](https://tools.ietf.org/html/rfc6749)
-- [PKCE RFC 7636](https://tools.ietf.org/html/rfc7636)
-- [.NET Security Documentation](https://docs.microsoft.com/en-us/aspnet/core/security/)
+- [Squad.co API Documentation](https://docs.squadco.com/)
+- [API Versioning Best Practices](https://restfulapi.net/versioning/)
+- [Domain-Driven Design Patterns](https://martinfowler.com/bliki/DomainDrivenDesign.html)
 
-### Tools
-- [Google Cloud Console](https://console.cloud.google.com/)
-- [OWASP ZAP](https://owasp.org/www-project-zap/)
-- [JWT.io](https://jwt.io/)
-- [Security Headers](https://securityheaders.com/)
+### Code Examples
+- `Squad.API/` - Complete payment gateway implementation
+- `Day-3/demos/` - Refactoring and versioning examples
+- `Day-3/exercises/` - Hands-on practice materials
 
-### Best Practices
-- [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/)
-- [Microsoft Security Development Lifecycle](https://www.microsoft.com/en-us/securityengineering/sdl)
-- [Azure Security Best Practices](https://docs.microsoft.com/en-us/azure/security/)
+### Tools & Libraries
+- Squad.co .NET SDK
+- FluentValidation for input validation
+- Serilog for structured logging
+- Polly for resilience patterns
+
+## 🎯 Success Metrics
+
+### By End of Day 3, You Should:
+1. **Successfully integrate Squad.co** into a working payment API
+2. **Refactor a 4000-line file** using industry-standard patterns
+3. **Implement API versioning** with backward compatibility
+4. **Add rate limiting** to the Squad.API project
+5. **Deploy securely** using Docker secrets management
+
+### Assessment Criteria
+- ✅ Payment gateway integration works end-to-end
+- ✅ Legacy code refactored using DDD principles
+- ✅ API versioning implemented correctly
+- ✅ Rate limiting and security measures in place
+- ✅ Docker secrets properly configured
+
+## 🚀 Getting Started
+
+### Quick Start
+```bash
+# Navigate to Squad.API
+cd Squad.API
+
+# Set up environment (secrets will be handled automatically)
+./setup-secrets.sh
+
+# Start the application
+docker-compose up -d
+
+# Test the API
+curl http://localhost:5000/health
+```
+
+### Verify Setup
+1. Squad.co integration is working
+2. Database migrations are applied
+3. All services are healthy
+4. Postman collection imported
+
+## 📝 Take-Home Assignment
+
+### Primary Task: Enhance Squad.API
+1. **Add Rate Limiting**: Implement token bucket algorithm
+2. **Security Headers**: Add comprehensive security headers
+3. **Monitoring**: Implement structured logging and metrics
+4. **Error Handling**: Add global exception handling
+5. **Documentation**: Create API documentation
+
+### Bonus Challenges
+- Implement circuit breaker pattern
+- Add caching layer with Redis
+- Create automated tests
+- Set up CI/CD pipeline
+
+## 🆘 Support & Resources
+
+### Help Channels
+- **Slack**: #api-course-day3
+- **Office Hours**: 4:00-5:00 PM daily
+- **Email**: instructor@api-course.com
+
+### Troubleshooting
+- Check `Day-3/TROUBLESHOOTING.md` for common issues
+- Review `Squad.API/README.md` for setup instructions
+- Consult `Day-3/facilitator-guide.md` for detailed explanations
 
 ---
 
-## 🎓 Assessment & Evaluation
+**Remember**: Day 3 builds on the foundation from Days 1 & 2. If you're struggling with any concepts, review the previous days' materials or ask for help early!
 
-### Knowledge Check
-- [ ] Can implement OAuth 2.0 with PKCE
-- [ ] Understands rate limiting strategies
-- [ ] Can configure security headers
-- [ ] Knows OWASP API Security Top 10
-- [ ] Can implement secure WebSocket connections
-- [ ] Understands secrets management best practices
-
-### Practical Skills
-- [ ] Successfully integrated Google OAuth
-- [ ] Implemented rate limiting in TaskFlow API
-- [ ] Added comprehensive security headers
-- [ ] Created secure webhook endpoints
-- [ ] Performed security testing with OWASP ZAP
-- [ ] Applied production security checklist
-
-### Security Mindset
-- [ ] Thinks security-first in API design
-- [ ] Understands threat modeling
-- [ ] Can identify common vulnerabilities
-- [ ] Knows how to secure sensitive data
-- [ ] Understands defense-in-depth principles
-
----
-
-## 🚀 Next Steps
-
-### Day 4 Preview
-- **Performance & Monitoring**: API performance optimization
-- **Deployment & DevOps**: CI/CD security practices
-- **Load Testing**: Performance under stress
-- **Monitoring**: Application performance monitoring
-
-### Take-Home Assignment
-- **Security Audit**: Perform security audit on personal projects
-- **OAuth Implementation**: Add OAuth to a side project
-- **Security Testing**: Run OWASP ZAP on a public API
-- **Documentation**: Create security runbook for TaskFlow API
-
----
-
-## 💡 Teaching Tips
-
-### Engagement Strategies
-- **Real-world examples**: Use recent security breaches as examples
-- **Hands-on demos**: Show live security testing
-- **Interactive discussions**: Encourage security-focused thinking
-- **Practical exercises**: Build security into every activity
-
-### Common Challenges
-- **Complexity**: OAuth 2.0 can be overwhelming - break it down
-- **Configuration**: Google OAuth setup can be tricky - provide step-by-step
-- **Testing**: Security testing requires patience - encourage exploration
-- **Mindset**: Shift from "it works" to "is it secure"
-
-### Success Metrics
-- **Implementation**: Students can implement OAuth 2.0
-- **Understanding**: Students can explain security concepts
-- **Application**: Students apply security to their own projects
-- **Mindset**: Students think security-first in development 
+**Next**: Day 4 will cover advanced topics like GraphQL, gRPC, and microservices architecture. 

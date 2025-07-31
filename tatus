@@ -1,0 +1,52 @@
+[33mcommit 449bc1ad9b72a2e1839ad437f5b9ac0677b99bc0[m
+Author: Claret <ibeawuchiclaret@gmail.com>
+Date:   Wed Jul 30 11:10:16 2025 +0100
+
+    day 3 setup
+
+5-Day API Course - Module-Aligned with Cohesive Project Build.txt
+Day-1/Day 1 Complete Implementation Guide - API Foundation & Design.pdf
+Day-1/Day 1 Resource Links & Setup Guide.pdf
+Day-1/Day 1 Slide Deck - API Foundation & Design.pdf
+Day-2/exercises/authentication-workshop.md
+Day-3/README.md
+Day-3/SECURITY-IMPLEMENTATION-SUMMARY.md
+Day-3/demos/websocket-security-demo.md
+Day-3/exercises/owasp-top10-workshop.md
+Day-3/exercises/production-security-checklist.md
+Day-3/facilitator-guide.md
+Day-3/implementation/oauth2-setup-guide.md
+Day-3/implementation/rate-limiting-guide.md
+Day-3/implementation/security-headers-guide.md
+taskflow-api-dotnet/.gitignore
+taskflow-api-dotnet/Dockerfile
+taskflow-api-dotnet/GOOGLE-OAUTH-SETUP.md
+taskflow-api-dotnet/OAUTH-FLOW-SUMMARY.md
+taskflow-api-dotnet/README.md
+taskflow-api-dotnet/SECURITY-FEATURES-README.md
+taskflow-api-dotnet/SETUP-GUIDE.md
+taskflow-api-dotnet/docker-compose.yml
+taskflow-api-dotnet/env.example
+taskflow-api-dotnet/env.template
+taskflow-api-dotnet/frontend/index.html
+taskflow-api-dotnet/postman/TaskFlow-API.postman_collection.json
+taskflow-api-dotnet/postman/TaskFlow-API.postman_environment.json
+taskflow-api-dotnet/serve-frontend.py
+taskflow-api-dotnet/setup-secrets.sh
+taskflow-api-dotnet/src/TaskFlow.API/Controllers/AuthController.cs
+taskflow-api-dotnet/src/TaskFlow.API/Controllers/UsersController.cs
+taskflow-api-dotnet/src/TaskFlow.API/Program.cs
+taskflow-api-dotnet/src/TaskFlow.API/TaskFlow.API.csproj
+taskflow-api-dotnet/src/TaskFlow.API/appsettings.json
+taskflow-api-dotnet/src/TaskFlow.Application/Interfaces/IUserRepository.cs
+taskflow-api-dotnet/src/TaskFlow.Application/TaskFlow.Application.csproj
+taskflow-api-dotnet/src/TaskFlow.Domain/Entities/ApplicationUser.cs
+taskflow-api-dotnet/src/TaskFlow.Domain/TaskFlow.Domain.csproj
+taskflow-api-dotnet/src/TaskFlow.Infrastructure/Persistence/Configurations/ProjectConfiguration.cs
+taskflow-api-dotnet/src/TaskFlow.Infrastructure/Persistence/Configurations/TaskConfiguration.cs
+taskflow-api-dotnet/src/TaskFlow.Infrastructure/Persistence/Configurations/UserConfiguration.cs
+taskflow-api-dotnet/src/TaskFlow.Infrastructure/Persistence/Repositories/UserRepository.cs
+taskflow-api-dotnet/src/TaskFlow.Infrastructure/Persistence/TaskFlowDbContext.cs
+taskflow-api-dotnet/src/TaskFlow.Infrastructure/TaskFlow.Infrastructure.csproj
+taskflow-api-dotnet/start-frontend.sh
+taskflow-api-dotnet/start.sh
