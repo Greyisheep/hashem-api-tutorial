@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squad.co Payment Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .payment-method {
+            flex: 1;
+            min-width: 120px;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .status-success {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .status-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .status-pending {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .features {
+            background: var(--light-color);
+            padding: 2rem;
+            margin-top: 2rem;
+            border-radius: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .feature-item i {
+            color: var(--success-color);
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .amount-display {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .test-cards {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .test-cards h6 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-cards ul {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <div class="header">
+                <h1><i class="fas fa-credit-card"></i> Squad.co Payment Demo</h1>
+                <p>Test the complete payment flow with modal and redirect functionality</p>
+            </div>
+
+            <div class="content">
+                <form id="paymentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email Address
+                                </label>
+                                <input type="email" id="email" class="form-control" required 
+                                       placeholder="customer@example.com" value="test@example.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="amount" class="form-label">
+                                    <i class="fas fa-money-bill-wave"></i> Amount (NGN)
+                                </label>
+                                <input type="number" id="amount" class="form-control" required 
+                                       placeholder="1000" value="5000" min="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customerName" class="form-label">
+                                    <i class="fas fa-user"></i> Customer Name
+                                </label>
+                                <input type="text" id="customerName" class="form-control" 
+                                       placeholder="John Doe" value="Test Customer">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="currency" class="form-label">
+                                    <i class="fas fa-coins"></i> Currency
+                                </label>
+                                <select id="currency" class="form-control">
+                                    <option value="NGN">NGN (Nigerian Naira)</option>
+                                    <option value="USD">USD (US Dollar)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="amount-display">
+                        <i class="fas fa-calculator"></i> 
+                        Amount in Kobo: <span id="amountKobo">500000</span> kobo
+                    </div>
+
+                    <div class="payment-methods">
+                        <div class="payment-method active" data-method="modal">
+                            <i class="fas fa-window-maximize"></i>
+                            <div><strong>Payment Modal</strong></div>
+                            <small>Redirect to Squad modal</small>
+                        </div>
+                        <div class="payment-method" data-method="direct-card">
+                            <i class="fas fa-credit-card"></i>
+                            <div><strong>Direct Card</strong></div>
+                            <small>Direct card payment</small>
+                        </div>
+                        <div class="payment-method" data-method="direct-bank">
+                            <i class="fas fa-university"></i>
+                            <div><strong>Direct Bank</strong></div>
+                            <small>Direct bank transfer</small>
+                        </div>
+                        <div class="payment-method" data-method="direct-ussd">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div><strong>Direct USSD</strong></div>
+                            <small>Direct USSD payment</small>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="button" id="initiatePayment" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Initiate Payment
+                        </button>
+                        <button type="button" id="verifyPayment" class="btn btn-success" style="display: none;">
+                            <i class="fas fa-check-circle"></i> Verify Payment
+                        </button>
+                    </div>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Processing payment...</p>
+                </div>
+
+                <div class="status-card" id="statusCard">
+                    <h5 id="statusTitle"></h5>
+                    <p id="statusMessage"></p>
+                    <div id="statusDetails"></div>
+                </div>
+
+                <div class="features">
+                    <h5><i class="fas fa-star"></i> Features</h5>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Payment Modal Integration</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Direct API Integration (Card, Bank, USSD)</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Webhook Processing</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Redirect URL Handling</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Email Notifications</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Transaction Verification</span>
+                    </div>
+                </div>
+
+                <div class="test-cards">
+                    <h6><i class="fas fa-info-circle"></i> Test Cards</h6>
+                    <ul>
+                        <li><strong>4242424242424242</strong> - Direct OTP validation (Amount < ₦7,500)</li>
+                        <li><strong>5200000000001096</strong> - 3DS authentication</li>
+                        <li><strong>5555555555554444</strong> - PIN + OTP (Two-step validation)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://checkout.squadco.com/widget/squad.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let currentTransactionRef = null;
+        let selectedPaymentMethod = 'modal';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateAmountDisplay();
+        });
+
+        function setupEventListeners() {
+            // Amount input
+            document.getElementById('amount').addEventListener('input', updateAmountDisplay);
+
+            // Payment method selection
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.addEventListener('click', function() {
+                    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedPaymentMethod = this.dataset.method;
+                });
+            });
+
+            // Initiate payment
+            document.getElementById('initiatePayment').addEventListener('click', initiatePayment);
+            document.getElementById('verifyPayment').addEventListener('click', verifyPayment);
+        }
+
+        function updateAmountDisplay() {
+            const amount = document.getElementById('amount').value;
+            const amountKobo = amount * 100;
+            document.getElementById('amountKobo').textContent = amountKobo.toLocaleString();
+        }
+
+        async function initiatePayment() {
+            const formData = getFormData();
+            
+            if (!validateForm(formData)) {
+                return;
+            }
+
+            showLoading(true);
+            hideStatus();
+
+            try {
+                let response;
+                
+                switch (selectedPaymentMethod) {
+                    case 'modal':
+                        response = await initiateModalPayment(formData);
+                        break;
+                    case 'direct-card':
+                        response = await initiateDirectCardPayment(formData);
+                        break;
+                    case 'direct-bank':
+                        response = await initiateDirectBankPayment(formData);
+                        break;
+                    case 'direct-ussd':
+                        response = await initiateDirectUSSDPayment(formData);
+                        break;
+                }
+
+                if (response.success) {
+                    showSuccess('Payment initiated successfully!', response.data);
+                    currentTransactionRef = response.data?.transaction_ref;
+                    document.getElementById('verifyPayment').style.display = 'block';
+                } else {
+                    showError('Payment initiation failed', response.message);
+                }
+            } catch (error) {
+                showError('An error occurred', error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function initiateModalPayment(formData) {
+            // For modal payment, we'll use the Squad widget
+            const squadInstance = new squad({
+                onClose: () => {
+                    console.log("Widget closed");
+                    showInfo('Payment modal closed', 'The payment modal was closed by the user.');
+                },
+                onLoad: () => {
+                    console.log("Widget loaded successfully");
+                },
+                onSuccess: (response) => {
+                    console.log("Payment successful", response);
+                    showSuccess('Payment successful!', response);
+                    currentTransactionRef = response.transaction_ref;
+                    document.getElementById('verifyPayment').style.display = 'block';
+                },
+                key: "sandbox_pk_4e0cb820488990016ea2bdd035cf18751b17f9026572",
+                email: formData.email,
+                amount: formData.amount * 100,
+                currency_code: formData.currency,
+                transaction_ref: formData.transaction_ref,
+                callback_url: `http://localhost:5000/api/squadpayment/redirect`,
+                customer_name: formData.customer_name,
+                payment_channels: ['card', 'bank', 'ussd']
+            });
+
+            squadInstance.setup();
+            squadInstance.open();
+
+            // Return a mock response for the modal
+            return {
+                success: true,
+                data: {
+                    transaction_ref: formData.transaction_ref,
+                    checkout_url: '#',
+                    message: 'Modal opened successfully'
+                }
+            };
+        }
+
+        async function initiateDirectCardPayment(formData) {
+            const requestData = {
+                amount: formData.amount * 100,
+                currency: formData.currency,
+                pass_charge: false,
+                webhook_url: `http://localhost:5000/api/squadpayment/webhook`,
+                card: {
+                    number: "4242424242424242",
+                    cvv: "123",
+                    expiry_month: "12",
+                    expiry_year: "25"
+                },
+                payment_method: "card",
+                customer: {
+                    name: formData.customer_name,
+                    email: formData.email
+                },
+                redirect_url: `http://localhost:5000/api/squadpayment/redirect`
+            };
+
+            const response = await fetch(`${API_BASE_URL}/squadpayment/direct/card`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            return await response.json();
+        }
+
+        async function initiateDirectBankPayment(formData) {
+            const requestData = {
+                amount: formData.amount * 100,
+                currency: formData.currency,
+                pass_charge: false,
+                webhook_url: `http://localhost:5000/api/squadpayment/webhook`,
+                bank: {
+                    bank_code: "058",
+                    account_or_phoneno: "1234567890"
+                },
+                payment_method: "bank",
+                customer: {
+                    name: formData.customer_name,
+                    email: formData.email
+                }
+            };
+
+            const response = await fetch(`${API_BASE_URL}/squadpayment/direct/bank`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            return await response.json();
+        }
+
+        async function initiateDirectUSSDPayment(formData) {
+            const requestData = {
+                amount: formData.amount * 100,
+                currency: formData.currency,
+                pass_charge: false,
+                webhook_url: `http://localhost:5000/api/squadpayment/webhook`,
+                ussd: {
+                    bank_code: "058"
+                },
+                payment_method: "ussd",
+                customer: {
+                    name: formData.customer_name,
+                    email: formData.email
+                }
+            };
+
+            const response = await fetch(`${API_BASE_URL}/squadpayment/direct/ussd`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            return await response.json();
+        }
+
+        async function verifyPayment() {
+            if (!currentTransactionRef) {
+                showError('No transaction reference available', 'Please initiate a payment first.');
+                return;
+            }
+
+            showLoading(true);
+            hideStatus();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/squadpayment/verify/${currentTransactionRef}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess('Payment verified successfully!', result.data);
+                } else {
+                    showError('Payment verification failed', result.message);
+                }
+            } catch (error) {
+                showError('An error occurred during verification', error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function getFormData() {
+            return {
+                email: document.getElementById('email').value,
+                amount: parseInt(document.getElementById('amount').value),
+                currency: document.getElementById('currency').value,
+                customer_name: document.getElementById('customerName').value,
+                transaction_ref: `TXN_${Date.now()}`
+            };
+        }
+
+        function validateForm(data) {
+            if (!data.email || !data.amount || data.amount < 100) {
+                showError('Validation Error', 'Please fill in all required fields. Amount must be at least ₦100.');
+                return false;
+            }
+            return true;
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showSuccess(title, data) {
+            const statusCard = document.getElementById('statusCard');
+            statusCard.className = 'status-card status-success';
+            document.getElementById('statusTitle').innerHTML = `<i class="fas fa-check-circle"></i> ${title}`;
+            document.getElementById('statusMessage').textContent = 'Your payment was processed successfully!';
+            
+            let details = '';
+            if (data) {
+                if (data.transaction_ref) details += `<p><strong>Transaction Ref:</strong> ${data.transaction_ref}</p>`;
+                if (data.checkout_url) details += `<p><strong>Checkout URL:</strong> <a href="${data.checkout_url}" target="_blank">Open Payment</a></p>`;
+                if (data.transaction_status) details += `<p><strong>Status:</strong> ${data.transaction_status}</p>`;
+            }
+            document.getElementById('statusDetails').innerHTML = details;
+            statusCard.style.display = 'block';
+        }
+
+        function showError(title, message) {
+            const statusCard = document.getElementById('statusCard');
+            statusCard.className = 'status-card status-error';
+            document.getElementById('statusTitle').innerHTML = `<i class="fas fa-exclamation-circle"></i> ${title}`;
+            document.getElementById('statusMessage').textContent = message;
+            document.getElementById('statusDetails').innerHTML = '';
+            statusCard.style.display = 'block';
+        }
+
+        function showInfo(title, message) {
+            const statusCard = document.getElementById('statusCard');
+            statusCard.className = 'status-card status-pending';
+            document.getElementById('statusTitle').innerHTML = `<i class="fas fa-info-circle"></i> ${title}`;
+            document.getElementById('statusMessage').textContent = message;
+            document.getElementById('statusDetails').innerHTML = '';
+            statusCard.style.display = 'block';
+        }
+
+        function hideStatus() {
+            document.getElementById('statusCard').style.display = 'none';
+        }
+
+        // Handle redirect URL parameters
+        function checkRedirectParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const transactionRef = urlParams.get('transactionRef');
+            const status = urlParams.get('status');
+            const error = urlParams.get('error');
+
+            if (error) {
+                let errorMessage = 'An error occurred during payment processing.';
+                if (error === 'missing_transaction_ref') {
+                    errorMessage = 'Transaction reference is missing from the redirect.';
+                } else if (error === 'redirect_error') {
+                    errorMessage = 'An error occurred while processing the redirect.';
+                }
+                showError('Payment Error', errorMessage);
+                return;
+            }
+
+            if (transactionRef) {
+                showInfo('Payment Redirect', `Transaction ${transactionRef} redirected with status: ${status || 'unknown'}`);
+                currentTransactionRef = transactionRef;
+                document.getElementById('verifyPayment').style.display = 'block';
+                
+                // Auto-verify the payment after redirect
+                setTimeout(() => {
+                    verifyPayment();
+                }, 1000);
+            }
+        }
+
+        // Check for redirect parameters on page load
+        checkRedirectParams();
+    </script>
+</body>
+</html> 

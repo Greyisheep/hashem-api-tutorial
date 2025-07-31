@@ -1,0 +1,135 @@
+{
+	"id": "squad-payment-environment",
+	"name": "Squad.co Payment API - Environment",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "transaction_ref",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "webhook_signature",
+			"value": "test_signature_for_development",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "encrypted_lookup_request",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "encrypted_transfer_request",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "customer_email",
+			"value": "customer@example.com",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "customer_name",
+			"value": "John Doe",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "test_amount",
+			"value": "50000",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "test_currency",
+			"value": "NGN",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "test_card_number",
+			"value": "4242424242424242",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "test_card_cvv",
+			"value": "123",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "test_card_expiry_month",
+			"value": "12",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "test_card_expiry_year",
+			"value": "25",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "test_bank_code",
+			"value": "058",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "test_account_number",
+			"value": "1234567890",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "test_phone_number",
+			"value": "08012345678",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "order_id",
+			"value": "ORD_123",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "customer_id",
+			"value": "CUST_456",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "admin_email",
+			"value": "admin@example.com",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "admin_password",
+			"value": "your_password_here",
+			"type": "secret",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-01-15T10:00:00.000Z",
+	"_postman_exported_using": "Postman/10.0.0"
+} 

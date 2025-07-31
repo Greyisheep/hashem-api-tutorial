@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: squad-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-squad_db}
+      POSTGRES_USER: ${POSTGRES_USER:-squad_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-squad_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - squad-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-squad_user} -d ${POSTGRES_DB:-squad_db}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Squad.API Application
+  squad-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: squad-api
+    env_file:
+      - .env
+    environment:
+      # Database Configuration
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=${POSTGRES_DB:-squad_db};Username=${POSTGRES_USER:-squad_user};Password=${POSTGRES_PASSWORD:-squad_password}
+      
+      # Application Configuration
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_URLS=http://+:5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - squad-network
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: squad-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - squad-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+
+networks:
+  squad-network:
+    driver: bridge 

@@ -1,0 +1,517 @@
+{
+	"info": {
+		"_postman_id": "squad-payment-collection",
+		"name": "Squad.co Payment API",
+		"description": "Complete collection for testing Squad.co payment gateway integration including modal, direct payments, webhooks, and redirects",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"your_password_here\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/log_in",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"log_in"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment Operations",
+			"item": [
+				{
+					"name": "Initiate Payment (Modal)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"customer@example.com\",\n  \"amount\": 50000,\n  \"currency\": \"NGN\",\n  \"customer_name\": \"John Doe\",\n  \"transaction_ref\": \"TXN_{{$timestamp}}\",\n  \"callback_url\": \"{{base_url}}/api/squadpayment/redirect\",\n  \"payment_channels\": [\"card\", \"bank\", \"ussd\"],\n  \"metadata\": {\n    \"order_id\": \"ORD_123\",\n    \"customer_id\": \"CUST_456\"\n  },\n  \"pass_charge\": false,\n  \"is_recurring\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/initiate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"initiate"
+							]
+						}
+					},
+					"response": []
+				},
+						{
+			"name": "Verify Transaction",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/squadpayment/verify/{{transaction_ref}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"squadpayment",
+						"verify",
+						"{{transaction_ref}}"
+					]
+				}
+			},
+			"response": []
+		},
+				{
+					"name": "Payment Redirect",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/redirect?transaction_ref={{transaction_ref}}&status=success",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"redirect"
+							],
+							"query": [
+								{
+									"key": "transaction_ref",
+									"value": "{{transaction_ref}}"
+								},
+								{
+									"key": "status",
+									"value": "success"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Direct Payment APIs",
+			"item": [
+				{
+					"name": "Direct Card Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 50000,\n  \"currency\": \"NGN\",\n  \"pass_charge\": false,\n  \"webhook_url\": \"{{base_url}}/api/squadpayment/webhook\",\n  \"card\": {\n    \"number\": \"4242424242424242\",\n    \"cvv\": \"123\",\n    \"expiry_month\": \"12\",\n    \"expiry_year\": \"25\"\n  },\n  \"payment_method\": \"card\",\n  \"customer\": {\n    \"name\": \"John Doe\",\n    \"email\": \"customer@example.com\"\n  },\n  \"redirect_url\": \"{{base_url}}/api/squadpayment/redirect\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/direct/card",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"direct",
+								"card"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Direct Bank Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 50000,\n  \"currency\": \"NGN\",\n  \"pass_charge\": false,\n  \"webhook_url\": \"{{base_url}}/api/squadpayment/webhook\",\n  \"bank\": {\n    \"bank_code\": \"058\",\n    \"account_or_phoneno\": \"1234567890\"\n  },\n  \"payment_method\": \"bank\",\n  \"customer\": {\n    \"name\": \"John Doe\",\n    \"email\": \"customer@example.com\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/direct/bank",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"direct",
+								"bank"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Direct USSD Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 50000,\n  \"currency\": \"NGN\",\n  \"pass_charge\": false,\n  \"webhook_url\": \"{{base_url}}/api/squadpayment/webhook\",\n  \"ussd\": {\n    \"bank_code\": \"058\"\n  },\n  \"payment_method\": \"ussd\",\n  \"customer\": {\n    \"name\": \"John Doe\",\n    \"email\": \"customer@example.com\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/direct/ussd",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"direct",
+								"ussd"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Webhook Testing",
+			"item": [
+				{
+					"name": "Webhook - Payment Success (Card)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-squad-encrypted-body",
+								"value": "{{webhook_signature}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Event\": \"charge_successful\",\n  \"TransactionRef\": \"{{transaction_ref}}\",\n  \"Body\": {\n    \"amount\": 50000,\n    \"transaction_ref\": \"{{transaction_ref}}\",\n    \"gateway_ref\": \"{{transaction_ref}}_1_1\",\n    \"transaction_status\": \"success\",\n    \"email\": \"customer@example.com\",\n    \"merchant_id\": \"SBN1EBZEQ8\",\n    \"currency\": \"NGN\",\n    \"transaction_type\": \"Card\",\n    \"merchant_amount\": 49500,\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"customer_mobile\": null,\n    \"meta\": {\n      \"order_id\": \"ORD_123\",\n      \"customer_id\": \"CUST_456\"\n    },\n    \"payment_information\": {\n      \"payment_type\": \"card\",\n      \"pan\": \"408408******4081\",\n      \"recurring_id\": null,\n      \"card_type\": \"visa\",\n      \"token_id\": \"tJlYMKcwPd\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Webhook - Payment Success (Bank)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-squad-encrypted-body",
+								"value": "{{webhook_signature}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Event\": \"charge_successful\",\n  \"TransactionRef\": \"{{transaction_ref}}\",\n  \"Body\": {\n    \"amount\": 50000,\n    \"transaction_ref\": \"{{transaction_ref}}\",\n    \"gateway_ref\": \"{{transaction_ref}}_2_1\",\n    \"transaction_status\": \"Success\",\n    \"email\": \"customer@example.com\",\n    \"merchant_id\": \"HD3DDPKW\",\n    \"currency\": \"NGN\",\n    \"transaction_type\": \"Bank\",\n    \"merchant_amount\": 49500,\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"meta\": {\n      \"order_id\": \"ORD_123\",\n      \"customer_id\": \"CUST_456\"\n    },\n    \"is_recurring\": false\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Webhook - Payment Success (USSD)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-squad-encrypted-body",
+								"value": "{{webhook_signature}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Event\": \"charge_successful\",\n  \"TransactionRef\": \"{{transaction_ref}}\",\n  \"Body\": {\n    \"amount\": 50000,\n    \"transaction_ref\": \"{{transaction_ref}}\",\n    \"gateway_ref\": \"{{transaction_ref}}_3_1\",\n    \"transaction_status\": \"Success\",\n    \"email\": \"customer@example.com\",\n    \"currency\": \"NGN\",\n    \"transaction_type\": \"Ussd\",\n    \"merchant_amount\": 49500,\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"customer_mobile\": \"0803***7205\",\n    \"meta\": {\n      \"order_id\": \"ORD_123\",\n      \"customer_id\": \"CUST_456\"\n    },\n    \"is_recurring\": false\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Webhook - Payment Failed",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-squad-encrypted-body",
+								"value": "{{webhook_signature}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Event\": \"charge.failed\",\n  \"TransactionRef\": \"{{transaction_ref}}\",\n  \"Body\": {\n    \"amount\": 50000,\n    \"transaction_ref\": \"{{transaction_ref}}\",\n    \"gateway_ref\": \"{{transaction_ref}}_1_1\",\n    \"transaction_status\": \"failed\",\n    \"email\": \"customer@example.com\",\n    \"merchant_id\": \"SBN1EBZEQ8\",\n    \"currency\": \"NGN\",\n    \"transaction_type\": \"Card\",\n    \"merchant_amount\": 49500,\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"meta\": {\n      \"order_id\": \"ORD_123\",\n      \"customer_id\": \"CUST_456\"\n    },\n    \"failure_reason\": \"Insufficient funds\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/squadpayment/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"squadpayment",
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Legacy Bank Operations",
+			"item": [
+				{
+					"name": "Account Lookup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"encryptedRequest\": \"{{encrypted_lookup_request}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/habari/lookup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"habari",
+								"lookup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transfer Funds",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"encryptedRequest\": \"{{encrypted_transfer_request}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/habari/transfer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"habari",
+								"transfer"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-generate transaction reference if not set",
+					"if (!pm.environment.get('transaction_ref')) {",
+					"    pm.environment.set('transaction_ref', 'TXN_' + Date.now());",
+					"}",
+					"",
+					"// Auto-generate webhook signature for testing",
+					"if (!pm.environment.get('webhook_signature')) {",
+					"    pm.environment.set('webhook_signature', 'test_signature_' + Date.now());",
+					"}",
+					"",
+					"// Set default values for testing",
+					"if (!pm.environment.get('base_url')) {",
+					"    pm.environment.set('base_url', 'http://localhost:5000');",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Store auth token from login response",
+					"if (pm.response.code === 200) {",
+					"    const response = pm.response.json();",
+					"    if (response.data && response.data.token) {",
+					"        pm.environment.set('auth_token', response.data.token);",
+					"    }",
+					"}",
+					"",
+					"// Store transaction reference from payment initiation",
+					"if (pm.request.url.path.includes('initiate') && pm.response.code === 200) {",
+					"    const response = pm.response.json();",
+					"    if (response.data && response.data.transaction_ref) {",
+					"        pm.environment.set('transaction_ref', response.data.transaction_ref);",
+					"    }",
+					"}",
+					"",
+					"// Store transaction reference from direct payment responses",
+					"if ((pm.request.url.path.includes('direct/card') || pm.request.url.path.includes('direct/bank') || pm.request.url.path.includes('direct/ussd')) && pm.response.code === 200) {",
+					"    const response = pm.response.json();",
+					"    if (response.data && response.data.transaction_ref) {",
+					"        pm.environment.set('transaction_ref', response.data.transaction_ref);",
+					"    }",
+					"}",
+					"",
+					"// Log successful responses",
+					"if (pm.response.code === 200) {",
+					"    console.log('Request successful:', pm.request.name);",
+					"    console.log('Response:', pm.response.json());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "transaction_ref",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "webhook_signature",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "encrypted_lookup_request",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "encrypted_transfer_request",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 
